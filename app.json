@@ -2,7 +2,7 @@
   "expo": {
     "name": "HelperForSSPU-MiniProgram",
     "slug": "HelperForSSPU-MiniProgram",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "helperforsspuminiprogram",
@@ -23,7 +23,8 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-router",
