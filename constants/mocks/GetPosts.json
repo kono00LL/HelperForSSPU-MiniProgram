@@ -1,0 +1,71 @@
+{
+  "page": 1,
+  "page_size": 3,
+  "total": 15,
+  "total_pages": 5,
+  "items": [
+    {
+      "title": "什么东西评论",
+      "content": "还在家睡觉觉",
+      "post_id": "354bf612-2a52-4244-827e-c458b50f41c4",
+      "user": {
+        "user_id": "882d2a1d-dedc-4791-a945-22a5ee1e382c",
+        "user_name": "Kare",
+        "avatar_url": "http://110.40.190.116:54128/static/avatar_default/1.jpg"
+      },
+      "created_time": "2025-12-01T19:54:12",
+      "view": 13,
+      "likes": 0,
+      "collect": 0,
+      "comment_count": 0,
+      "images": [
+        {
+          "img_id": "6dbbe43e-b789-4416-94e2-1563f48a7ac1",
+          "img_url": "http://110.40.190.116:54128/static/uploads/images/6dbbe43e-b789-4416-94e2-1563f48a7ac1_tmp_a10090fa768834ec00cad67132886f04ac8b5aa35c40a6cc.jpg"
+        }
+      ]
+    },
+    {
+      "title": "无意义帖子哈哈哈",
+      "content": "那些见到你\n都觉得肯定\n那等你洗漱",
+      "post_id": "6f3d14db-6ce3-4827-b8ab-6ad542f8da74",
+      "user": {
+        "user_id": "882d2a1d-dedc-4791-a945-22a5ee1e382c",
+        "user_name": "Kare",
+        "avatar_url": "http://110.40.190.116:54128/static/avatar_default/1.jpg"
+      },
+      "created_time": "2025-12-01T19:53:55",
+      "view": 22,
+      "likes": 1,
+      "collect": 1,
+      "comment_count": 0,
+      "images": [
+        {
+          "img_id": "e009043c-0bf8-4922-8829-f9759a1bfde9",
+          "img_url": "http://110.40.190.116:54128/static/uploads/images/e009043c-0bf8-4922-8829-f9759a1bfde9_tmp_b1cea3fbf47779531f6e2713dcd8b8bf9dd36fff207ab1d2.jpg"
+        }
+      ]
+    },
+    {
+      "title": "无意义帖子",
+      "content": "467376458",
+      "post_id": "2f679791-0306-4d4a-9aed-70e4ec1b29a6",
+      "user": {
+        "user_id": "882d2a1d-dedc-4791-a945-22a5ee1e382c",
+        "user_name": "Kare",
+        "avatar_url": "http://110.40.190.116:54128/static/avatar_default/1.jpg"
+      },
+      "created_time": "2025-12-01T19:51:58",
+      "view": 2,
+      "likes": 0,
+      "collect": 0,
+      "comment_count": 0,
+      "images": [
+        {
+          "img_id": "1e7144f1-6dea-46ca-9b9f-a66099dff819",
+          "img_url": "http://110.40.190.116:54128/static/uploads/images/1e7144f1-6dea-46ca-9b9f-a66099dff819_tmp_9611633de8f78cf57ef6af7d8ea795ef3a170e479d275930.jpg"
+        }
+      ]
+    }
+  ]
+}

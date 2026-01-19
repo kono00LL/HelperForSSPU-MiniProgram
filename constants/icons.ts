@@ -12,6 +12,7 @@ import keyboardBoxLine from "@/assets/icons/keyboard-box-line.png";
 import loveH from "@/assets/icons/love-h.png";
 import love from "@/assets/icons/love.png";
 import message from "@/assets/icons/message.png";
+import post from "@/assets/icons/post.png";
 import profile from "@/assets/icons/profile.png";
 import starH from "@/assets/icons/star-h.png";
 import star from "@/assets/icons/star.png";
@@ -39,4 +40,5 @@ export const icons = {
   thumb,
   thumbH,
   view,
+  post,
 };

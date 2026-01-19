@@ -11,7 +11,7 @@ import { icons } from "@/constants/icons";
 function TabIcon({ focused, icon, title }: any) {
   if (focused) {
     return (
-      <View className="bg-blue-500">
+      <View >
         <ImageBackground className="flex flex-1 size-full justify-center items-center">
           <Image source={icon} className="size-6"></Image>
           <Text className=" text-base font-semibold">
@@ -44,7 +44,7 @@ export default function TabsLayout() {
          * 导航栏应该是375*48，icon是24*24，文字是16，加上文字是24*40，
          */
         tabBarStyle: {
-          backgroundColor: "#DCDCDC",
+          backgroundColor: "#ffffff",
           borderRadius: 5,
           marginHorizontal: 0,
           marginBottom: 0,
@@ -95,7 +95,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused }) => (
             <TabIcon
               focused={focused}
-              icon={icons.home}
+              icon={icons.post}
               title="发布"
             />
           ),

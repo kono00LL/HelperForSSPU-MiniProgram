@@ -8,6 +8,10 @@ export default function RootLayout() {
         name="(tabs)"
         options={{ headerShown: false }}
       />
+       <Stack.Screen
+        name="posts/[post_id]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }
