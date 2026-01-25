@@ -41,3 +41,5 @@ app-example
 # generated native folders
 /ios
 /android
+
+/docs/签名.md
