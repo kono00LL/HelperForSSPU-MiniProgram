@@ -5,6 +5,11 @@ export interface User {
   avatar_url: string;
 }
 
+export interface Images {
+  img_id: string;
+  img_url: string;
+}
+
 export interface Post {
   title: string;
   content: string;
@@ -15,7 +20,7 @@ export interface Post {
   likes: number;
   collect: number;
   comment_count: number;
-  images: string[];
+  images: Images[];
 }
 
 export interface PostsResponse {

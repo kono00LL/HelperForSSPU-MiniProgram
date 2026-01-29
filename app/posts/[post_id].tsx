@@ -4,9 +4,11 @@ import { Post } from "@/interfaces/postInfo";
 import { usePostStore } from "@/store/postStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import ImageView from "react-native-image-viewing";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Swiper from "react-native-swiper";
 interface PostProps {
   post: Post
 }
@@ -18,6 +20,18 @@ const PostDetails = ({ post }: PostProps) => {
   const error = usePostStore((state) => state.error);
   const fetchPostDetail = usePostStore((state) => state.fetchPostDetail);
   const clearCurrentPost = usePostStore((state) => state.clearCurrentPost);
+  const [visible, setVisible] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const previewImage = currentPost?.images.map(item => ({
+    uri: item.img_url,
+  })) as { uri: string; }[];
+  console.log('previewImage', previewImage);
+
+  const handleImagePress = (index: number) => {
+    setVisible(true);
+    setCurrentImageIndex(index);
+  }
 
   useEffect(() => {
     if (post_id) {
@@ -63,7 +77,7 @@ const PostDetails = ({ post }: PostProps) => {
         >
           <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
-              paddingBottom: 280  // 200(评论) + 60(输入框) + 20(额外空间)
+              paddingBottom: 40
             }}>
 
             { /* 顶部区域 */}
@@ -85,29 +99,72 @@ const PostDetails = ({ post }: PostProps) => {
             {/* 图片区域 */}
             <View className="flex-1">
               {currentPost.images && currentPost.images.length > 0 ? (
-                <View className="h-[50vh]">
-                  <Image
-                    source={{ uri: currentPost.images[0].img_url }}
-                    className="w-full h-full"
-                    resizeMode="cover"
-                  />
+                <View className="px-2 py-2 h-[50vh]">
+                  <Swiper
+                    style={{ height: '100%' }}
+                    showsButtons={false}
+                    loop={false}
+                    dot={
+                      <View style={{
+                        backgroundColor: 'rgba(255,255,255,0.5)',
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        marginLeft: 3,
+                        marginRight: 3,
+                      }} />
+                    }
+                    activeDot={
+                      <View style={{
+                        backgroundColor: '#fff',
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        marginLeft: 3,
+                        marginRight: 3,
+                      }} />
+                    }
+                    paginationStyle={{
+                      bottom: 10,
+                    }}
+                    onIndexChanged={(index) => setCurrentImageIndex(index)}
+                  >
+                    {currentPost.images.map((img, index) => (
+                      <TouchableOpacity
+                        key={img.img_id}
+                        activeOpacity={0.9}
+                        onPress={() => handleImagePress(index)}
+                        style={{ flex: 1 }}
+                      >
+                        <Image
+                          source={{ uri: img.img_url }}
+                          className="w-full h-full"
+                          resizeMode="cover"
+                        />
+                      </TouchableOpacity>
+                    ))}
+                  </Swiper>
+
+
+
+
                 </View>
-              ) : null}
+              ) :
+                <View className="h-[50vh] px-2 py-2 bg-white ">
+                  <Text className="text-center text-gray-400">没有图片</Text>
+                </View>}
             </View>
 
             {/* 帖子内容区域 */}
-            <View className="flex-1">
+            <View className="flex-1 py-8">
               {/* 标题 */}
-              <Text className="text-2xl font-bold mb-3">
+              <Text className="text-3xl font-bold mb-3">
                 {currentPost.title}
               </Text>
 
               {/* 正文 */}
               <Text className="text-base leading-6 text-gray-700 mb-4">
                 {currentPost.content},
-                **《放松时光：与你共享Lo-Fi故事》**是一款帮助你专注于工作的有声小说游戏，让你与喜爱写小说、
-                充满幻想的少女——聪音（Satone）一起在书桌前工作。去自由定义那些展现聪音情感的Lofi音乐、环境音和风景吧，能帮助自己更专注于工作！
-                随着你投入更多时间与她共度，彼此的信任关系将逐渐加深，或许你们的心灵也能真正相通……？
               </Text>
 
 
@@ -144,6 +201,12 @@ const PostDetails = ({ post }: PostProps) => {
 
 
       </SafeAreaView>
+      <ImageView
+        images={previewImage}
+        imageIndex={0}
+        visible={visible}
+        onRequestClose={() => setVisible(false)}
+      />
 
     </>
   )
