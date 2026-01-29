@@ -40,9 +40,8 @@ export default function TabsLayout() {
           justifyContent: "center",
           alignItems: "center",
         },
-        /**
-         * 导航栏应该是375*48，icon是24*24，文字是16，加上文字是24*40，
-         */
+
+
         tabBarStyle: {
           backgroundColor: "#ffffff",
           borderRadius: 5,

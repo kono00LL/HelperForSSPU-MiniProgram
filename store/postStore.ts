@@ -23,7 +23,6 @@ export const usePostStore = create<PostStore>((set, get) => ({
         try {
             await apiViewIncrement(post_id);
             const postData = await apiGetPostDetail(post_id);
-            console.log(postData);
             set({
                 currentPost: Array.isArray(postData) ? postData[0] : postData,
                 isLoading: false,
@@ -52,7 +51,7 @@ export const usePostStore = create<PostStore>((set, get) => ({
         );
 
         set({ postList: [...currentPostList, ...newPostList] })
-        // console.log('the new postList', get().postList)
+
 
     },
 

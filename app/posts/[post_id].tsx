@@ -26,7 +26,6 @@ const PostDetails = ({ post }: PostProps) => {
   const previewImage = currentPost?.images.map(item => ({
     uri: item.img_url,
   })) as { uri: string; }[];
-  console.log('previewImage', previewImage);
 
   const handleImagePress = (index: number) => {
     setVisible(true);
