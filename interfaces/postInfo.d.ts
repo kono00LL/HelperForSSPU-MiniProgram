@@ -6,9 +6,9 @@ export interface User {
 }
 
 export interface Post {
-  post_id: string;
   title: string;
   content: string;
+  post_id: string;
   user: User;
   created_time: string;
   view: number;

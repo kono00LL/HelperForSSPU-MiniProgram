@@ -1,15 +1,26 @@
+import { Post } from "@/interfaces/postInfo";
 import { apiGetPostDetail, apiViewIncrement } from "@/services/api";
 import { create } from "zustand";
-
-  export const usePostStore = create((set,get) => ({
+interface PostStore {
+    currentPost: Post | null;
+    isLoading: boolean;
+    error: string | null;
+    postList: Post[];
+    addPosts: (posts: Post[]) => void;
+    clearPosts: () => void;
+    fetchPostDetail: (post_id: string) => Promise<void>;
+    clearCurrentPost: () => void;
+}
+export const usePostStore = create<PostStore>((set, get) => ({
     currentPost: null,
     isLoading: false,
     error: null,
+    postList: [],
 
-    fetchPostDetail: async(post_id:string) => {
-        set({isLoading:true,error:null});
+    fetchPostDetail: async (post_id: string) => {
+        set({ isLoading: true, error: null });
 
-        try{
+        try {
             await apiViewIncrement(post_id);
             const postData = await apiGetPostDetail(post_id);
             console.log(postData);
@@ -27,7 +38,26 @@ import { create } from "zustand";
     },
 
     clearCurrentPost: () => {
-        set({ currentPost: null, error:null})
-    }
+        set({ currentPost: null, error: null })
+    },
 
-  }))
+    addPosts: (posts) => {
+        if (!posts || posts.length === 0) return;
+        const currentPostList = get().postList;
+
+        const newPostList = posts.filter(
+            (newPostList: Post) => !currentPostList.some(
+                (existingPost) => existingPost.post_id === newPostList.post_id
+            )
+        );
+
+        set({ postList: [...currentPostList, ...newPostList] })
+        // console.log('the new postList', get().postList)
+
+    },
+
+    clearPosts: () => {
+        set({ postList: [] })
+    },
+
+}))

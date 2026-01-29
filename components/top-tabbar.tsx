@@ -14,9 +14,8 @@ const TopTabBar = ({
     <View className="h-[44px] w-full bg-gray-300 flex-row rounded-b-3xl text-white">
       {/* 校园新闻 Tab */}
       <TouchableOpacity
-        className={`flex-1 items-center justify-center ${
-          activeTab === 0 ? "bg-white" : ""
-        }`}
+        className={`flex-1 items-center justify-center ${activeTab === 0 ? "bg-white" : ""
+          }`}
         onPress={() => onTabChange(0)}
       >
         <Text
@@ -32,9 +31,8 @@ const TopTabBar = ({
 
       {/* 学生讨论 Tab */}
       <TouchableOpacity
-        className={`flex-1 items-center justify-center ${
-          activeTab === 1 ? "bg-white" : ""
-        }`}
+        className={`flex-1 items-center justify-center ${activeTab === 1 ? "bg-white" : ""
+          }`}
         onPress={() => onTabChange(1)}
       >
         <Text

@@ -13,9 +13,9 @@ interface PostCardProps {
 }
 const PostCard = ({ post }: PostCardProps) => {
   return (
-    <View className="w-[100%] bg-white p-4 rounded-lg shadow-md border-gray-200 border flex-1 justify-between">
+    <View className="w-[100%] bg-white p-4 rounded-lg shadow-md border-gray-200 border mb-2">
       {/* 用户信息 */}
-      <View className="flex-row items-center mb-3 bg-blue-800">
+      <View className="flex-row items-center mb-3">
         <Image
           source={{ uri: post.user.avatar_url }}
           className="w-10 h-10 rounded-full"
@@ -25,13 +25,13 @@ const PostCard = ({ post }: PostCardProps) => {
             {post.user.user_name}
           </Text>
         </View>
-        <View className="ml-6 bg-blue-800">
+        <View className="ml-6">
           <Text className="font-semibold text-base ml-1">
             <Image source={icons.love} className="size-6" />{" "}
             {post.likes}
           </Text>
         </View>
-        <View className="ml-1 bg-blue-800">
+        <View className="ml-1">
           <Image source={icons.star} className="size-6" />
         </View>
       </View>
