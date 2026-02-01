@@ -32,7 +32,7 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                         </Text>
 
                         {/* 评论图片 */}
-                        {comment.images && comment.images.length > 0 && (
+                        {/* {comment.images && comment.images.length > 0 && (
                             <View className="flex-row flex-wrap mt-2">
                                 {comment.images.map((img) => (
                                     <Image
@@ -43,12 +43,12 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                                     />
                                 ))}
                             </View>
-                        )}
+                        )} */}
 
                         {/* 底部操作：回复数、点赞 */}
-                        <View className="flex-row items-center mt-2 gap-4">
+                        {/* <View className="flex-row items-center mt-2 gap-4">
 
-                        </View>
+                        </View> */}
                     </View>
                 </View>
             </View>

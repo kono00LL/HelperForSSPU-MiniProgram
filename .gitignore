@@ -43,4 +43,12 @@ app-example
 /android
 
 /docs/签名.md
+<<<<<<< HEAD
 /docs/环境配置.md
+=======
+/docs/环境配置.md
+/docs/backed/
+/.gradle
+/.idea
+.gitignore
+>>>>>>> f12f817 (chore：小改动)
