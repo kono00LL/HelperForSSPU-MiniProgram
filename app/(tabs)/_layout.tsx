@@ -130,6 +130,23 @@ export default function TabsLayout() {
           ),
         }}
       />
+
+
+      <Tabs.Screen
+        name="wechat-test"
+        options={{
+          title: "WechatTest",
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <TabIcon
+              focused={focused}
+              icon={icons.profile}
+              title="WechatTest"
+            />
+          ),
+        }}
+      />
     </Tabs>
+
   );
 }

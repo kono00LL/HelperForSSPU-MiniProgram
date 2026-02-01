@@ -44,6 +44,7 @@ app-example
 
 /docs/签名.md
 <<<<<<< HEAD
+<<<<<<< HEAD
 /docs/环境配置.md
 =======
 /docs/环境配置.md
@@ -52,3 +53,8 @@ app-example
 /.idea
 .gitignore
 >>>>>>> f12f817 (chore：小改动)
+=======
+/docs/环境配置.md
+/.gradle
+/.idea
+>>>>>>> 3cec125 (feat：使用react-native-hero/wechat库初步完成微信登录功能开发)

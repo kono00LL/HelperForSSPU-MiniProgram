@@ -1,6 +1,8 @@
 import axiosJsonInstance from "@/Utils/request";
 import { CommentsResponse } from "@/interfaces/commentInfo";
 import { Post, PostsResponse } from "@/interfaces/postInfo";
+import { LoginResponse } from "@/interfaces/userInfo";
+
 export const apiViewIncrement = async (post_id: string): Promise<Post> => {
   try {
     const response = await axiosJsonInstance.post(`/post/view_increment/${post_id}`)
@@ -54,6 +56,18 @@ export const apiGetComments = async (post_id: string, page: number, page_size: n
   }
   catch (error) {
     console.error('Get comments failed:', error);
+    throw error;
+  }
+}
+
+export const apiWechatLogin = async (js_code: string): Promise<LoginResponse> => {
+  try {
+    const response = await axiosJsonInstance.post('/user/login', {
+      js_code,
+    });
+    return response;
+  } catch (error) {
+    console.error('Wechat login failed:', error);
     throw error;
   }
 }
