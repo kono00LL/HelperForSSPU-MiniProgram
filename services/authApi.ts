@@ -9,9 +9,9 @@ export interface LoginResponse {
 }
 
 // 微信登录 - 发送 code 到后端
-export function apiWechatLogin(jsCode: string) {
+export function apiWechatLogin(code: string) {
     return axiosJsonInstance({
-        url: `/user/login?js_code=${encodeURIComponent(jsCode)}`,
+        url: `/user/login?code=${encodeURIComponent(code)}`,
         method: "POST",
     });
 }

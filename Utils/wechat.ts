@@ -18,6 +18,20 @@ import {
 const WECHAT_APP_ID = 'wxd6296407cab2f81c';
 const UNIVERSAL_LINK = '';
 
+// 定义微信授权返回的数据类型
+export interface WechatAuthResponse {
+    code: string;        // 用于换取access_token的临时票据，有效期10分钟
+    state?: string;      // 第三方程序发送时用来标识的唯一性标志
+    lang?: string;       // 微信客户端当前语言
+    country?: string;    // 微信用户当前国家信息
+}
+
+export interface WechatLoginResult {
+    success: boolean;
+    data?: WechatAuthResponse;
+    error?: any;
+}
+
 // 初始化微信 SDK
 export const initWechat = () => {
     try {
@@ -34,13 +48,29 @@ export const initWechat = () => {
 };
 
 // 微信登录
-export const wechatLogin = async () => {
+export const wechatLogin = async (): Promise<WechatLoginResult> => {
     try {
+        console.log('正在拉起微信授权...');
+
         const response = await sendAuthRequest({
             scope: SCOPE.USER_INFO,
         });
-        console.log('✅ 微信授权成功:', response);
-        return { success: true, data: response.data };
+
+        console.log('✅ 微信授权成功，返回数据:', response);
+
+        // response.data 包含 code
+        if (response?.data?.code) {
+            return {
+                success: true,
+                data: response.data as WechatAuthResponse
+            };
+        } else {
+            console.warn('⚠️ 微信返回数据中没有 code:', response);
+            return {
+                success: false,
+                error: new Error('未获取到授权码')
+            };
+        }
     } catch (error) {
         console.error('❌ 微信授权失败:', error);
         return { success: false, error };

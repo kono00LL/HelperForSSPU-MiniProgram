@@ -2,6 +2,7 @@ import { useUserStore } from "@/store/userStore";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
 const BASE_URL = "http://110.40.190.116:54128";
+const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE5ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcwNjM3NzAxLCJleHAiOjE3NzEyNDI1MDF9.syJemAF3K0SxhZg4SkZGqnxRlKi6qjmZWYKgaEDD9cs";
 
 const axiosJsonInstance = axios.create({
   baseURL: BASE_URL,
@@ -13,9 +14,10 @@ const axiosJsonInstance = axios.create({
 //请求拦截器
 axiosJsonInstance.interceptors.request.use(
   (config) => {
-    const accessToken = useUserStore.getState().accessToken;
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    // 暂时所有请求都使用 refreshToken
+    // const accessToken = useUserStore.getState().accessToken;
+    if (refreshToken) {
+      config.headers.Authorization = `Bearer ${refreshToken}`;
     }
     return config;
   },
