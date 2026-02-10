@@ -26,7 +26,6 @@ axiosRefreshInstance.interceptors.request.use(
     const storedRefreshToken = useUserStore.getState().refreshToken;
     const tokenToUse = storedRefreshToken || refreshToken;
     config.headers.Authorization = tokenToUse;
-    console.log('使用 refreshToken 发起请求', tokenToUse);
     return config;
   },
   (error) => {
@@ -51,7 +50,6 @@ axiosJsonInstance.interceptors.request.use(
     const accessToken = useUserStore.getState().accessToken;
     if (accessToken) {
       config.headers.Authorization = accessToken;
-      console.log('使用 accessToken 发起请求');
     }
     return config;
   },

@@ -1,14 +1,17 @@
 import CommentDisplay from "@/components/comment-display";
 import { icons } from "@/constants/icons";
 import { Post } from "@/interfaces/postInfo";
+import { apiCreateComment } from "@/services/api";
+import useCommentStore from "@/store/commentStore";
 import { usePostStore } from "@/store/postStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import ImageView from "react-native-image-viewing";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
+
 interface PostProps {
   post: Post
 }
@@ -23,6 +26,10 @@ const PostDetails = ({ post }: PostProps) => {
   const [visible, setVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const [commentText, setCommentText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const addComment = useCommentStore((state) => state.addComment);
+
   const previewImage = currentPost?.images.map(item => ({
     uri: item.img_url,
   })) as { uri: string; }[];
@@ -31,6 +38,49 @@ const PostDetails = ({ post }: PostProps) => {
     setVisible(true);
     setCurrentImageIndex(index);
   }
+
+  const handleSendComment = async () => {
+    // 验证评论内容
+    if (!commentText.trim()) {
+      Alert.alert("提示", "评论内容不能为空");
+      return;
+    }
+
+    if (!post_id) {
+      Alert.alert("错误", "帖子ID不存在");
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      // 调用API创建评论
+      const newComment = await apiCreateComment(
+        post_id,
+        commentText.trim(),
+        null,
+        null // 对帖子直接评论，parent_comment_id为null
+      );
+
+      // 添加评论到store
+      addComment(post_id, newComment);
+
+      // 清空输入框
+      setCommentText("");
+
+      // 提示成功
+      Alert.alert("成功", "评论发表成功！");
+    } catch (error: any) {
+      console.error("发表评论失败:", error);
+      Alert.alert(
+        "发表失败",
+        error.response?.data?.message || error.message || "请稍后重试"
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+
+
+  }
+
 
   useEffect(() => {
     if (post_id) {
@@ -74,27 +124,30 @@ const PostDetails = ({ post }: PostProps) => {
         // contentContainerStyle={{ flex: 1, backgroundColor: 'red' }}
         // keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
         >
+          { /* 顶部区域 */}
+          <View className="flex-row px-4 py-3">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="mr-20"
+            >
+              <Ionicons name="arrow-back" size={24} color="#000" />
+            </TouchableOpacity>
+            <Image
+              source={{ uri: currentPost?.user?.avatar_url }}
+              className="w-10 h-10 rounded-full ml-10"
+            />
+            <Text className="ml-3 text-base font-semibold flex-1">
+              {currentPost.user.user_name}
+            </Text>
+
+
+          </View>
           <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               paddingBottom: 40
             }}>
 
-            { /* 顶部区域 */}
-            <View className="flex-row px-4 py-3 border-blue-800">
-              <TouchableOpacity
-                onPress={() => router.back()}
-                className="mr-20"
-              >
-                <Ionicons name="arrow-back" size={24} color="#000" />
-              </TouchableOpacity>
-              <Image
-                source={{ uri: currentPost?.user?.avatar_url }}
-                className="w-10 h-10 rounded-full ml-10"
-              />
-              <Text className="ml-3 text-base font-semibold flex-1">
-                {currentPost.user.user_name}
-              </Text>
-            </View>
+
             {/* 图片区域 */}
             <View className="flex-1">
               {currentPost.images && currentPost.images.length > 0 ? (
@@ -168,15 +221,26 @@ const PostDetails = ({ post }: PostProps) => {
 
 
             </View>
+            <TouchableOpacity className="flex-row items-center ml-4">
+              <Image source={icons.love} className="size-6" />
+              <Text className="font-semibold text-base ml-2">
+                {currentPost.likes}
+              </Text>
+            </TouchableOpacity>
+
 
             {/* 评论区域 */}
             <View className="min-h-[200px]">
               <CommentDisplay post_id={post_id!} />
             </View>
+
+
+
+
           </ScrollView>
 
 
-          {/* 通过一个函数来处理保存评论， */}
+
           {/* 底部区域 */}
           <View className="h-[60px] w-full bg-[#b0bcbf] flex-row items-center px-4">
             <TextInput
@@ -184,19 +248,29 @@ const PostDetails = ({ post }: PostProps) => {
               placeholder="发表评论..."
               placeholderTextColor="#9CA3AF"
               cursorColor="#3b82f6"
+              value={commentText}
+              onChangeText={setCommentText}
+              onSubmitEditing={handleSendComment}
+              returnKeyType="send"
+              editable={!isSubmitting}
             />
 
-            {/* 点赞按钮在右侧 */}
-            <TouchableOpacity className="flex-row items-center ml-4">
-              <Image source={icons.love} className="size-6" />
-              <Text className="font-semibold text-base ml-2">
-                {currentPost.likes}
-              </Text>
+            {/* 发送按钮 */}
+            <TouchableOpacity
+              onPress={handleSendComment}
+              disabled={isSubmitting || !commentText.trim()}
+              className={`bg-gray-300 rounded-full px-4 py-2 mr-2 ${(isSubmitting || !commentText.trim()) ? 'opacity-50' : ''
+                }`}
+            >
+              {isSubmitting ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Text className="text-white font-semibold">发送</Text>
+              )}
             </TouchableOpacity>
           </View>
 
         </KeyboardAvoidingView>
-
 
 
       </SafeAreaView>

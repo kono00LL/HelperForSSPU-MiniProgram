@@ -69,7 +69,7 @@ const CardDisplay = () => {
                     <PostCard post={item} />
                 )}
                 keyExtractor={(item) => item.post_id}
-                contentContainerStyle={{ padding: 16, paddingBottom: 120 }}
+                contentContainerStyle={{ padding: 8, paddingBottom: 120 }}
                 onEndReached={loadMorePage}
                 onEndReachedThreshold={0.1}
                 refreshing={refreshing}

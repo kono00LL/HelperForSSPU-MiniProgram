@@ -3,18 +3,17 @@ import { create } from "zustand";
 interface CommentStore {
     comments: { [post_id: string]: Comment[] };
 
-
     addComments: (post_id: string, comments: Comment[]) => void;
+    addComment: (post_id: string, comment: Comment) => void;
     clearComments: (post_id: string) => void;
     clearAllComments: () => void;
-
-
 
 }
 const useCommentStore = create<CommentStore>((set, get) => ({
     comments: {},
-
+    content: "",
     // 添加评论到指定帖子
+    // 本意是用来评论展示的
     addComments: (post_id: string, comments: Comment[]) => {
 
         if (!comments || comments.length === 0) return;
@@ -33,6 +32,10 @@ const useCommentStore = create<CommentStore>((set, get) => ({
                 [post_id]: [...currentCommentList, ...newCommentList]
             }
         });
+    },
+    addComment: (post_id: string, comment: Comment) => {
+
+
     },
 
     // 清除指定帖子的评论

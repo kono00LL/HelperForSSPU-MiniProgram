@@ -152,18 +152,13 @@ export const apiCreatePost = async (
 export const apiCreateComment = async (
   post_id: string,
   content: string,
-  images?: string[] | null,
+  images?: null,
   parent_comment_id?: string | null
 ): Promise<Comment> => {
   try {
     const formData = new FormData();
     formData.append('post_id', post_id);
     formData.append('content', content);
-    if (images) {
-      images.forEach((img) => {
-        formData.append('images', img);
-      });
-    }
     const response = await axiosJsonInstance.post('/comment/', formData, {
       params: parent_comment_id ? { parent_comment_id } : {},
       headers: { 'Content-Type': 'multipart/form-data' },

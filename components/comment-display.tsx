@@ -1,8 +1,9 @@
+import { icons } from '@/constants/icons';
 import { Comment } from '@/interfaces/commentInfo';
 import { apiGetComments } from '@/services/api';
 import useCommentStore from '@/store/commentStore';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Text, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
 interface CommentDisplayProps {
     post_id: string;
 }
@@ -44,9 +45,11 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                         )} */}
 
                         {/* 底部操作：回复数、点赞 */}
-                        {/* <View className="flex-row items-center mt-2 gap-4">
-
-                        </View> */}
+                        <View className="flex-row items-center  gap-4">
+                            <TouchableOpacity className="flex-row ml-[200px]">
+                                <Image source={icons.message} className="size-6" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
             </View>
