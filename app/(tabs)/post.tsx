@@ -5,13 +5,14 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View
 } from "react-native";
+import { launchImageLibrary } from "react-native-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 const Post = () => {
   const router = useRouter();
   const {
@@ -22,10 +23,30 @@ const Post = () => {
     setDraftContent,
     removeDraftImage,
     clearDraft,
+    addDraftImage,
     publishPost,
   } = usePostStore();
 
   const [isPublishing, setIsPublishing] = useState(false);
+
+  const handlePickImage = async () => {
+    if (draftImages.length >= 9) {
+      Alert.alert("最多上传9张图片");
+    }
+
+    const result = await launchImageLibrary({
+      mediaType: "photo",
+      selectionLimit: 9 - draftImages.length, // 剩余可选数量
+      quality: 0.8,
+    });
+    if (result.didCancel || !result.assets) return;
+
+    result.assets.forEach((asset) => {
+      if (asset.uri) {
+        addDraftImage(asset.uri);
+      }
+    });
+  }
 
   const handlePublish = async () => {
     if (!draftTitle.trim() || !draftContent.trim()) return;
@@ -53,84 +74,100 @@ const Post = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 顶部导航栏 */}
-      <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-        {/* 左侧关闭按钮 */}
-        <TouchableOpacity
-          onPress={() => {
-            clearDraft();
-            router.back();
-          }}
-        >
-          <Text className="text-2xl text-gray-600">✕</Text>
-        </TouchableOpacity>
+      <ScrollView className="flex-1">
+        {/* 顶部导航栏 */}
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
+          {/* 左侧关闭按钮 */}
+          <TouchableOpacity
+            onPress={() => {
+              clearDraft();
+              router.back();
+            }}
+          >
+            <Text className="text-2xl text-gray-600">✕</Text>
+          </TouchableOpacity>
 
-        {/* 右侧发布按钮 */}
-        <TouchableOpacity
-          className={`px-5 py-2 rounded-full ${draftTitle.trim() && draftContent.trim() && !isPublishing
-            ? "bg-blue-700"
-            : "bg-gray-300"
-            }`}
-          disabled={!draftTitle.trim() || !draftContent.trim() || isPublishing}
-          onPress={handlePublish}
-        >
-          {isPublishing ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text className="text-white font-semibold text-base">发布</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          {/* 右侧发布按钮 */}
+          <TouchableOpacity
+            className={`px-5 py-2 rounded-full ${draftTitle.trim() && draftContent.trim() && !isPublishing
+              ? "bg-blue-700"
+              : "bg-gray-300"
+              }`}
+            disabled={!draftTitle.trim() || !draftContent.trim() || isPublishing}
+            onPress={handlePublish}
+          >
+            {isPublishing ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text className="text-white font-semibold text-base">发布</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
 
-      {/* 标题输入框 */}
-      <TextInput
-        className="text-xl font-bold py-4 border-b border-gray-100"
-        placeholder="请输入标题"
-        placeholderTextColor="#9CA3AF"
-        value={draftTitle}
-        onChangeText={setDraftTitle}
-        maxLength={30}
-      />
+        {/* 标题输入框 */}
+        <TextInput
+          className="text-xl font-bold py-4 border-b border-gray-100"
+          placeholder="请输入标题"
+          placeholderTextColor="#9CA3AF"
+          value={draftTitle}
+          onChangeText={setDraftTitle}
+          maxLength={30}
+        />
 
-      {/* 正文输入框 */}
-      <TextInput
-        className="text-base py-4 min-h-[200px]"
-        placeholder="请输入正文内容..."
-        placeholderTextColor="#9CA3AF"
-        value={draftContent}
-        onChangeText={setDraftContent}
-        multiline
-        textAlignVertical="top"
-      />
-      {/* // TODO:图片预览和底部都被覆盖无法正常显示 */}
-      {/* 图片预览区域 */}
+        {/* 正文输入框 */}
+        <TextInput
+          className="text-base py-4 min-h-[200px]"
+          placeholder="请输入正文内容..."
+          placeholderTextColor="#9CA3AF"
+          value={draftContent}
+          onChangeText={setDraftContent}
+          multiline
+          textAlignVertical="top"
+        />
 
-      <View className="flex-row flex-wrap gap-2 mt-2">
-        <Text>图片预览区域</Text>
-        {draftImages.map((uri, index) => (
-          <View key={index} className="relative">
-            <Image
-              source={{ uri }}
-              className="w-24 h-24 rounded-lg"
-            />
+        {/* 图片上传 */}
+
+        {/* 图片上传 */}
+        <View className="flex-row flex-wrap gap-2 mt-2 px-4">
+          {draftImages.map((uri, index) => (
+            <View key={index} className="relative">
+              <Image
+                source={{ uri }}
+                className="w-24 h-24 rounded-lg"
+              />
+              <TouchableOpacity
+                className="absolute -top-2 -right-2 bg-black/60 rounded-full w-5 h-5 items-center justify-center"
+                onPress={() => removeDraftImage(index)}
+              >
+                <Text className="text-white text-xs">✕</Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+
+          {/* 添加图片按钮 */}
+          {draftImages.length < 9 && (
             <TouchableOpacity
-              className="absolute -top-2 -right-2 bg-black/60 rounded-full w-5 h-5 items-center justify-center"
-              onPress={() => removeDraftImage(index)}
+              className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 items-center justify-center bg-gray-50"
+              onPress={handlePickImage}
             >
-              <Text className="text-white text-xs">✕</Text>
+              <Text className="text-3xl text-gray-400">+</Text>
+              <Text className="text-xs text-gray-400 mt-1">
+                {draftImages.length}/9
+              </Text>
             </TouchableOpacity>
-          </View>
-        ))}
-      </View>
+          )}
+        </View>
 
 
 
-      {/* 底部工具栏 */}
-      <View className="flex-row items-center px-4 py-3 border-t border-gray-200">
-        <Text>底部工具栏</Text>
+        {/* 底部工具栏 */}
+        <View className="flex-row items-center px-4 py-3 border-t border-gray-200">
+          <Text>底部工具栏</Text>
 
-      </View>
+        </View>
+      </ScrollView>
+
     </SafeAreaView>
   );
 };

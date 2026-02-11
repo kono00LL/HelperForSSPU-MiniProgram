@@ -92,17 +92,18 @@ export const usePostStore = create<PostStore>((set, get) => ({
         set({ draftTitle: "", draftContent: "", draftImages: [] });
     },
     publishPost: async () => {
-        const { draftTitle, draftContent } = get();
+        const { draftTitle, draftContent, draftImages } = get();
 
         if (!draftTitle.trim() || !draftContent.trim()) {
             throw new Error("标题和内容不能为空");
         }
 
         try {
-            // 调用 API 创建帖子（暂时不传图片）
+            // 调用 API 创建帖子
             const newPost = await apiCreatePost(
                 draftTitle.trim(),
-                draftContent.trim()
+                draftContent.trim(),
+                draftImages.length > 0 ? draftImages : undefined
             );
 
             // 将新帖子添加到列表顶部

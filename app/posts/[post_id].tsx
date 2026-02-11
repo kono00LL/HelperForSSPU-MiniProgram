@@ -176,9 +176,9 @@ const PostDetails = ({ post }: PostProps) => {
           </ScrollView>
 
 
-
+          {/* 通过一个函数来处理保存评论， */}
           {/* 底部区域 */}
-          <View className="h-[60px] w-full bg-blue-800 flex-row items-center px-4">
+          <View className="h-[60px] w-full bg-[#b0bcbf] flex-row items-center px-4">
             <TextInput
               className="flex-1 bg-gray-100 rounded-full px-4 mr-2"
               placeholder="发表评论..."

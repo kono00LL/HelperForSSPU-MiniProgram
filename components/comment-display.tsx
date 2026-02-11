@@ -6,8 +6,6 @@ import { FlatList, Image, Text, View } from 'react-native';
 interface CommentDisplayProps {
     post_id: string;
 }
-
-
 const CommentItem = ({ comment }: { comment: Comment }) => {
 
     return (

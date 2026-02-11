@@ -15,12 +15,8 @@ const Index = () => {
     // 刷新 token 的函数
     const refreshAccessToken = async () => {
       try {
-        console.log('正在刷新 access token...');
         const response = await axiosRefreshInstance.get('/user/refresh');
         const { user_id, access_token, refresh_token } = response;
-        console.log('user_id', user_id);
-        console.log('access_token', access_token);
-        console.log('refresh_token', refresh_token);
 
         setTokens(user_id, access_token, refresh_token);
         console.log('Access token 刷新成功');

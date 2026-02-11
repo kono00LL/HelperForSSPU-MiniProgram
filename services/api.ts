@@ -100,7 +100,6 @@ export const apiUpdateUserInfo = async (params: UserUpdateParams): Promise<User>
  * 创建帖子
  * POST /post/
  * multipart/form-data
- * 无图片
  */
 export const apiCreatePost = async (
   title: string,
@@ -112,9 +111,6 @@ export const apiCreatePost = async (
     formData.append('title', title);
     formData.append('content', content);
 
-    // 调试日志
-    console.log('📤 发送创建帖子请求:', { title, content });
-    console.log('📦 FormData entries:');
     // @ts-ignore - FormData在RN中可能有entries方法
     if (formData.entries) {
       for (let pair of formData.entries()) {
@@ -123,8 +119,15 @@ export const apiCreatePost = async (
     }
 
     if (images && images.length > 0) {
-      images.forEach((img) => {
-        formData.append('images', img);
+      images.forEach((uri, index) => {
+        const fileName = uri.split('/').pop() || `image_${index}.jpg`;
+        const fileType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+        formData.append('images', {
+          uri: uri,
+          type: fileType,
+          name: fileName,
+        } as any);
       });
     }
 
