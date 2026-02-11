@@ -100,6 +100,7 @@ export const apiUpdateUserInfo = async (params: UserUpdateParams): Promise<User>
  * 创建帖子
  * POST /post/
  * multipart/form-data
+ * 无图片
  */
 export const apiCreatePost = async (
   title: string,
@@ -110,13 +111,27 @@ export const apiCreatePost = async (
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
-    if (images) {
+
+    // 调试日志
+    console.log('📤 发送创建帖子请求:', { title, content });
+    console.log('📦 FormData entries:');
+    // @ts-ignore - FormData在RN中可能有entries方法
+    if (formData.entries) {
+      for (let pair of formData.entries()) {
+        console.log('  ', pair[0], '=', pair[1]);
+      }
+    }
+
+    if (images && images.length > 0) {
       images.forEach((img) => {
         formData.append('images', img);
       });
     }
+
     const response = await axiosJsonInstance.post('/post/', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
     return response;
   } catch (error) {
@@ -124,6 +139,7 @@ export const apiCreatePost = async (
     throw error;
   }
 };
+
 
 /**
  * 创建评论

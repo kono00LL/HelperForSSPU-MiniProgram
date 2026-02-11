@@ -29,6 +29,8 @@ interface UserStore {
     error: string | null;
 
     setUser: (user: UserInfo, accessToken: string, refreshToken: string) => void;
+    setAccessToken: (accessToken: string) => void;
+    setTokens: (userId: string, accessToken: string, refreshToken: string) => void;
     logout: () => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
@@ -53,6 +55,20 @@ export const useUserStore = create<UserStore>()(
                     isLoggedIn: true,
                     error: null,
                 });
+            },
+            // 新增：仅更新 access token
+            setAccessToken: (accessToken) => {
+                set({ accessToken });
+            },
+
+            // 新增：更新 tokens 和 user_id
+            setTokens: (userId, accessToken, refreshToken) => {
+                set((state) => ({
+                    user: state.user ? { ...state.user, user_id: userId } : { user_id: userId } as UserInfo,
+                    accessToken,
+                    refreshToken,
+                    isLoggedIn: true,
+                }));
             },
 
             logout: () => {

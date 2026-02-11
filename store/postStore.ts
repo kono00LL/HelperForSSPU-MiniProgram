@@ -1,5 +1,5 @@
 import { Post } from "@/interfaces/postInfo";
-import { apiGetPostDetail, apiViewIncrement } from "@/services/api";
+import { apiCreatePost, apiGetPostDetail, apiViewIncrement } from "@/services/api";
 import { create } from "zustand";
 
 interface PostStore {
@@ -22,6 +22,7 @@ interface PostStore {
     addDraftImage: (uri: string) => void;
     removeDraftImage: (index: number) => void;
     clearDraft: () => void;
+    publishPost: () => Promise<Post>;
 }
 
 export const usePostStore = create<PostStore>((set, get) => ({
@@ -89,5 +90,29 @@ export const usePostStore = create<PostStore>((set, get) => ({
 
     clearDraft: () => {
         set({ draftTitle: "", draftContent: "", draftImages: [] });
+    },
+    publishPost: async () => {
+        const { draftTitle, draftContent } = get();
+
+        if (!draftTitle.trim() || !draftContent.trim()) {
+            throw new Error("标题和内容不能为空");
+        }
+
+        try {
+            // 调用 API 创建帖子（暂时不传图片）
+            const newPost = await apiCreatePost(
+                draftTitle.trim(),
+                draftContent.trim()
+            );
+
+            // 将新帖子添加到列表顶部
+            const currentPostList = get().postList;
+            set({ postList: [newPost, ...currentPostList] });
+
+            return newPost;
+        } catch (error) {
+            console.error("Publish post failed:", error);
+            throw error;
+        }
     },
 }));

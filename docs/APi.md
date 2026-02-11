@@ -428,3 +428,20 @@ POST
   "is_read": true
 }
 ```
+
+AccessToken用户令牌重认证
+GET
+/user/refresh Refresh Access Token
+
+需要请求头，且是特别的refreshtoken而不是普通的accesstoken
+只有这个接口才需要
+
+返回
+```json
+{
+  "user_id": "882d2a1d-dedc-4791-a945-22a5ee1e382c",
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE1ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3NzA3MzEzNTcsImV4cCI6MTc3MDczMjI1N30.-SdaiRIBGxj0yPpMoCWcaVgmyeUADYS36WxC4YD3jCM",
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE1ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcwNjQ2MzI3LCJleHAiOjE3NzEyNTExMjd9.J2Eee2hHBrrHg974u8Tkgb8Aj4MHR9bsPLZWvTMXqSA"
+}
+```
+
