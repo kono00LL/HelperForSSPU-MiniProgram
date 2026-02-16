@@ -18,7 +18,7 @@ const Index = () => {
       try {
         const response = await axiosRefreshInstance.get('/user/refresh');
 
-        const { user_id, access_token, refresh_token } = response;
+        const { user_id, access_token, refresh_token } = response.data;
 
         setTokens(user_id, access_token, refresh_token);
 

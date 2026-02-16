@@ -36,7 +36,7 @@ axiosRefreshInstance.interceptors.request.use(
 // 响应拦截器
 axiosRefreshInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data;
+    return response;
   },
   (error) => {
     console.error('Refresh Token Error:', error.response?.status, error.response?.data);
@@ -60,7 +60,7 @@ axiosJsonInstance.interceptors.request.use(
 //响应拦截器
 axiosJsonInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data;
+    return response;
   },
   async (error) => {
     const originalRequest = error.config;
@@ -73,7 +73,7 @@ axiosJsonInstance.interceptors.response.use(
 
         // 调用 refresh 接口
         const response = await axiosRefreshInstance.get('/user/refresh');
-        const { user_id, access_token, refresh_token } = response;
+        const { user_id, access_token, refresh_token } = response.data;
         // 保存新的 tokens
         useUserStore.getState().setTokens(user_id, access_token, refresh_token);
 

@@ -17,7 +17,7 @@ import { LoginResponse, User } from "@/interfaces/userInfo";
 export const apiViewIncrement = async (post_id: string): Promise<Post> => {
   try {
     const response = await axiosJsonInstance.post(`/post/view_increment/${post_id}`)
-    return response;
+    return response.data;
   } catch (error) {
     console.error('View increment failed:', error);
     throw error;
@@ -32,7 +32,7 @@ export const apiGetPostDetail = async (post_id: string): Promise<Post> => {
         post_id,
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get post detail failed:', error);
     throw error;
@@ -48,7 +48,7 @@ export const apiGetPosts = async (page: number, page_size: number): Promise<Post
         page_size,
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get posts failed:', error);
     throw error;
@@ -66,7 +66,7 @@ export const apiGetUserPosts = async (user_id: string, page: number, page_size: 
         page_size,
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get posts failed:', error);
     throw error;
@@ -81,7 +81,7 @@ export const apiGetComments = async (post_id: string, page: number, page_size: n
         page_size,
       },
     });
-    return response;
+    return response.data;
   }
   catch (error) {
     console.error('Get comments failed:', error);
@@ -94,7 +94,7 @@ export const apiWechatLogin = async (js_code: string): Promise<LoginResponse> =>
     const response = await axiosJsonInstance.post('/user/login', {
       js_code,
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Wechat login failed:', error);
     throw error;
@@ -107,7 +107,7 @@ export const apiWechatLogin = async (js_code: string): Promise<LoginResponse> =>
 export const apiUpdateUserInfo = async (params: UserUpdateParams): Promise<User> => {
   try {
     const response = await axiosJsonInstance.put('/user/userinfo', params);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Update user info failed:', error);
     throw error;
@@ -154,7 +154,7 @@ export const apiCreatePost = async (
         'Content-Type': 'multipart/form-data',
       },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Create post failed:', error);
     throw error;
@@ -181,7 +181,7 @@ export const apiCreateComment = async (
       params: parent_comment_id ? { parent_comment_id } : {},
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Create comment failed:', error);
     throw error;
@@ -208,7 +208,7 @@ export const apiUploadImages = async (
     const response = await axiosJsonInstance.post('/images/', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Upload images failed:', error);
     throw error;
@@ -222,7 +222,7 @@ export const apiUploadImages = async (
 export const apiToggleThumb = async (data: ThumbRequest): Promise<ThumbResponse> => {
   try {
     const response = await axiosJsonInstance.post('/thumb/', data);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Toggle thumb failed:', error);
     throw error;
@@ -236,7 +236,7 @@ export const apiToggleThumb = async (data: ThumbRequest): Promise<ThumbResponse>
 export const apiGetUserThumbs = async (entity_type: string): Promise<ThumbResponse[]> => {
   try {
     const response = await axiosJsonInstance.post('/thumb/user', { entity_type });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get user thumbs failed:', error);
     throw error;
@@ -250,7 +250,7 @@ export const apiGetUserThumbs = async (entity_type: string): Promise<ThumbRespon
 export const apiToggleCollect = async (post_id: string): Promise<CollectResponse> => {
   try {
     const response = await axiosJsonInstance.post('/collect/', { post_id });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Toggle collect failed:', error);
     throw error;
@@ -264,7 +264,7 @@ export const apiToggleCollect = async (post_id: string): Promise<CollectResponse
 export const apiGetUserCollects = async (): Promise<Post[]> => {
   try {
     const response = await axiosJsonInstance.get('/collect/user');
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get user collects failed:', error);
     throw error;
@@ -287,7 +287,7 @@ export const apiToggleFollow = async (
       { followee_id },
       { params: { follow } }
     );
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Toggle follow failed:', error);
     throw error;
@@ -301,7 +301,7 @@ export const apiToggleFollow = async (
 export const apiGetFans = async (): Promise<FansFollowingResponse> => {
   try {
     const response = await axiosJsonInstance.get('/follow/fans');
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get fans failed:', error);
     throw error;
@@ -315,7 +315,7 @@ export const apiGetFans = async (): Promise<FansFollowingResponse> => {
 export const apiGetFollowing = async (): Promise<FansFollowingResponse> => {
   try {
     const response = await axiosJsonInstance.get('/follow/following');
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get following failed:', error);
     throw error;
@@ -335,7 +335,7 @@ export const apiGetUserProfile = async (
     const response = await axiosJsonInstance.get(`/follow/profile/${user_id}`, {
       params: { page, page_size },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get user profile failed:', error);
     throw error;
@@ -354,7 +354,7 @@ export const apiGetUnreadNotifications = async (
     const response = await axiosJsonInstance.get('/notification/unread', {
       params: { page, page_size },
     });
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Get unread notifications failed:', error);
     throw error;
@@ -370,7 +370,7 @@ export const apiMarkNotificationRead = async (
 ): Promise<MarkReadResponse> => {
   try {
     const response = await axiosJsonInstance.post(`/notification/read/${notification_id}`);
-    return response;
+    return response.data;
   } catch (error) {
     console.error('Mark notification read failed:', error);
     throw error;
