@@ -1,7 +1,8 @@
-import { apiGetUserThumbs } from "@/services/api";
+import { apiGetUserCollects, apiGetUserThumbs } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+
 export interface UserInfo {
     user_id: string;
     user_name: string;
@@ -22,6 +23,7 @@ interface UserStore {
     user: UserInfo | null;
     // 帖子点赞哈希表：post_id -> isThumbed (boolean)
     ThumbedMap: Record<string, boolean>;
+    CollectedMap: Record<string, boolean>;
     accessToken: string | null;
     refreshToken: string | null;
     isLoggedIn: boolean;
@@ -35,13 +37,16 @@ interface UserStore {
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     refreshThumbedMap: () => Promise<void>;
+    refreshCollectedMap: () => Promise<void>;
     clearThumbedMap: () => void;
+    clearCollectedMap: () => void;
 }
 export const useUserStore = create<UserStore>()(
     persist(
         (set) => ({
             user: null,
             ThumbedMap: {},
+            CollectedMap: {},
             accessToken: null,
             refreshToken: null,
             isLoggedIn: false,
@@ -84,6 +89,31 @@ export const useUserStore = create<UserStore>()(
             },
             clearThumbedMap: () => {
                 set({ ThumbedMap: {} });
+            },
+            refreshCollectedMap: async () => {
+                try {
+                    const res = await apiGetUserCollects();
+                    // 处理可能的数据格式
+                    const list = Array.isArray((res as any)?.data)
+                        ? (res as any).data
+                        : Array.isArray(res)
+                            ? res
+                            : [];
+                    const hashMap: Record<string, boolean> = {};
+                    for (const item of list) {
+                        if (item && item.post_id != null) {
+                            hashMap[item.post_id] = true;
+                        }
+                    }
+
+                    set({ CollectedMap: hashMap });
+
+                } catch (error) {
+                    console.error("刷新收藏列表失败:", error);
+                }
+            },
+            clearCollectedMap: () => {
+                set({ CollectedMap: {} });
             },
             // 新增：仅更新 access token
             setAccessToken: (accessToken) => {

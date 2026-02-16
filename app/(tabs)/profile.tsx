@@ -1,3 +1,4 @@
+import CollectCardDisplay from "@/components/collect-card-display";
 import UserCardDisplay from "@/components/user-card-display";
 import UserTabBar from "@/components/user-tabbar";
 import { UserProfileResponse } from "@/interfaces/apiTypes";
@@ -8,7 +9,7 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const { user, isLoggedIn, setUser, logout } = useUserStore();
+  const { user } = useUserStore();
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
@@ -23,22 +24,21 @@ const Profile = () => {
     fetchUserProfile();
   });
 
-  const displayUser = profileData?.user || user;
   return (
     <SafeAreaView className="flex-1">
       {/* 个人信息头部 */}
-      <View className="bg-white px-4 py-5 border-b border-gray-200">
+      <View className="bg-white px-4 py-5">
         <View className="flex-row items-center justify-between mb-4">
           {/* 头像和用户名 */}
           <View className="flex-row items-center">
             <Image
               source={{
-                uri: displayUser?.avatar_url || "http://110.40.190.116:54128/static/avatar_default/3.jpg"
+                uri: profileData?.user?.avatar_url || "http://110.40.190.116:54128/static/avatar_default/3.jpg"
               }}
               className="w-16 h-16 rounded-full bg-gray-200"
             />
             <Text className="ml-3 text-lg font-semibold text-gray-900">
-              {displayUser?.user_name || "未登录"}
+              {profileData?.user?.user_name || "未登录"}
             </Text>
           </View>
 
@@ -52,19 +52,19 @@ const Profile = () => {
         <View className="flex-row justify-start ml-2 space-x-8">
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-900">
-              {user?.likes || 0}
+              {profileData?.user.likes || 0}
             </Text>
             <Text className="text-xs text-gray-500 mt-1">获赞</Text>
           </View>
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-900">
-              {user?.follower_cnt || 0}
+              {profileData?.user.follower_cnt || 0}
             </Text>
             <Text className="text-xs text-gray-500 mt-1">关注</Text>
           </View>
           <View className="items-center">
             <Text className="text-xl font-bold text-gray-900">
-              {user?.fans_cnt || 0}
+              {profileData?.user.fans_cnt || 0}
             </Text>
             <Text className="text-xs text-gray-500 mt-1">粉丝</Text>
           </View>
@@ -77,11 +77,11 @@ const Profile = () => {
         />
         {activeTab === 0 ? (
           <View className="flex-1">
-            <UserCardDisplay user_id={displayUser?.user_id || ""} />
+            <UserCardDisplay user_id={profileData?.user?.user_id || ""} />
           </View>
         ) : (
-          <View>
-            <Text>收藏</Text>
+          <View className="flex-1">
+            <CollectCardDisplay user_id={profileData?.user?.user_id || ""} />
           </View>
         )}
       </View>

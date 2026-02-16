@@ -11,46 +11,48 @@ const UserTabBar = ({
 	onTabChange,
 }: TopTabBarProps) => {
 	return (
-		<View className="h-[34px] w-full flex-row overflow-hidden bg-gray-300 relative">
-			{/* 顶部高光效果 */}
-			<View className="absolute top-0 left-0 right-0 h-[1px] bg-white/30 z-10" />
-
+		<View className="h-[34px] w-full flex-row bg-white">
 			{/* 已发布帖子 Tab */}
 			<TouchableOpacity
-				className={`flex-1 items-center justify-center ${activeTab === 0 ? "bg-gray-300" : "bg-gray-300"}`}
+				className="flex-1 items-center justify-center relative"
 				onPress={() => onTabChange(0)}
 				activeOpacity={0.7}
 			>
 				<Text
 					className={
 						activeTab === 0
-							? "font-bold text-white"
-							: "text-white"
+							? "font-bold text-blue-600 text-base"
+							: "text-gray-500 text-base"
 					}
 				>
 					发布
 				</Text>
+				{/* 下划线指示器 */}
+				{activeTab === 0 && (
+					<View className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600" />
+				)}
 			</TouchableOpacity>
 
 			{/* 收藏帖子 Tab */}
 			<TouchableOpacity
-				className={`flex-1 items-center justify-center ${activeTab === 1 ? "bg-gray-300" : "bg-gray-300"}`}
+				className="flex-1 items-center justify-center relative"
 				onPress={() => onTabChange(1)}
 				activeOpacity={0.7}
 			>
 				<Text
 					className={
 						activeTab === 1
-							? "font-bold text-white"
-							: "text-white"
+							? "font-bold text-blue-600 text-base"
+							: "text-gray-500 text-base"
 					}
 				>
 					收藏
 				</Text>
+				{/* 下划线指示器 */}
+				{activeTab === 1 && (
+					<View className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-600" />
+				)}
 			</TouchableOpacity>
-
-			{/* 底部高光效果 */}
-			<View className="absolute bottom-0 left-0 right-0 h-[1px] bg-white/30 z-10" />
 		</View>
 	);
 };

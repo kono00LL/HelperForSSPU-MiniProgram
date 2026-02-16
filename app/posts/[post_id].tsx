@@ -1,7 +1,7 @@
 import CommentDisplay from "@/components/comment-display";
 import { icons } from "@/constants/icons";
 import { Post } from "@/interfaces/postInfo";
-import { apiCreateComment } from "@/services/api";
+import { apiCreateComment, apiToggleCollect } from "@/services/api";
 import useCommentStore from "@/store/commentStore";
 import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
@@ -12,6 +12,7 @@ import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Scroll
 import ImageView from "react-native-image-viewing";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
+
 interface PostProps {
   post: Post
 }
@@ -32,7 +33,12 @@ const PostDetails = ({ post }: PostProps) => {
 
   const ThumbedMap = useUserStore((state) => state.ThumbedMap);
   const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
-  const clearThumbedMap = useUserStore((state) => state.clearThumbedMap);
+  const refreshCollectedMap = useUserStore((state) => state.refreshCollectedMap);
+
+  const CollectedMap = useUserStore((state) => state.CollectedMap);
+  const [localCollected, setLocalCollected] = useState(() => {
+    return !!CollectedMap[post_id];
+  });
 
   const previewImage = currentPost?.images.map(item => ({
     uri: item.img_url,
@@ -45,7 +51,6 @@ const PostDetails = ({ post }: PostProps) => {
 
 
   const handleSendComment = async () => {
-    // 验证评论内容
     if (!commentText.trim()) {
       Alert.alert("提示", "评论内容不能为空");
       return;
@@ -57,21 +62,15 @@ const PostDetails = ({ post }: PostProps) => {
     }
     setIsSubmitting(true);
     try {
-      // 调用API创建评论
       const newComment = await apiCreateComment(
         post_id,
         commentText.trim() + "喵",
         null,
         null // 对帖子直接评论，parent_comment_id为null
       );
-
-      // 添加评论到store
       addComment(post_id, newComment);
-
-      // 清空输入框
       setCommentText("");
 
-      // 提示成功
       Alert.alert("成功", "评论发表成功！");
     } catch (error: any) {
       console.error("发表评论失败:", error);
@@ -83,16 +82,36 @@ const PostDetails = ({ post }: PostProps) => {
       setIsSubmitting(false);
     }
   }
+  const onCollect = async () => {
+    const newLocalCollected = !localCollected;
+    setLocalCollected(newLocalCollected);
+    CollectedMap[post_id] = true;
+    try {
+      await apiToggleCollect(post_id);
+      const refreshCollectedMap = useUserStore.getState().refreshCollectedMap;
+      await refreshCollectedMap();
+      console.log('CollectedMap', CollectedMap);
+
+    } catch (error) {
+      console.error('Toggle collect failed:', error);
+      setLocalCollected(localCollected);
+    }
+  };
 
 
   useEffect(() => {
     refreshThumbedMap();
+    refreshCollectedMap();
+    if (CollectedMap[post_id] !== undefined) {
+      setLocalCollected(!!CollectedMap[post_id]);
+    }
     if (post_id) {
       fetchPostDetail(post_id);
     }
     return () => {
       clearCurrentPost();
     };
+
   }, [post_id]);
 
   if (isLoading) {
@@ -232,18 +251,12 @@ const PostDetails = ({ post }: PostProps) => {
               </Text>
             </TouchableOpacity>
 
-
             {/* 评论区域 */}
             <View className="min-h-[200px]">
               <CommentDisplay post_id={post_id!} />
             </View>
 
-
-
-
           </ScrollView>
-
-
 
           {/* 底部区域 */}
           <View className="h-[60px] w-full bg-[#b0bcbf] flex-row items-center px-4">
@@ -271,6 +284,9 @@ const PostDetails = ({ post }: PostProps) => {
               ) : (
                 <Text className="text-white font-semibold">发送</Text>
               )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onCollect} activeOpacity={1} >
+              <Image source={localCollected ? icons.starH : icons.star} className="size-6" />
             </TouchableOpacity>
           </View>
 

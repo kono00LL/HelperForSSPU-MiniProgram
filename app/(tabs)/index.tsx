@@ -11,6 +11,7 @@ const Index = () => {
   const { setTokens } = useUserStore();
   const [activeTab, setActiveTab] = useState(0);
   const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
+  const refreshCollectedMap = useUserStore((state) => state.refreshCollectedMap);
   const ThumbedMap = useUserStore((state) => state.ThumbedMap);
   useEffect(() => {
     // 刷新 token 的函数
@@ -30,7 +31,7 @@ const Index = () => {
     // 首次进入立即刷新
     refreshAccessToken();
     refreshThumbedMap();
-    console.log('ThumbedMap', ThumbedMap);
+    refreshCollectedMap();
 
     // 设置定时器，每10分钟（600000毫秒）刷新一次
     const intervalId = setInterval(refreshAccessToken, 10 * 60 * 1000);
