@@ -10,7 +10,8 @@ const Index = () => {
   // 为0时处于默认index，为1时切换为活动界面
   const { setTokens } = useUserStore();
   const [activeTab, setActiveTab] = useState(0);
-
+  const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
+  const ThumbedMap = useUserStore((state) => state.ThumbedMap);
   useEffect(() => {
     // 刷新 token 的函数
     const refreshAccessToken = async () => {
@@ -20,7 +21,7 @@ const Index = () => {
         const { user_id, access_token, refresh_token } = response;
 
         setTokens(user_id, access_token, refresh_token);
-        console.log('Access token 刷新成功');
+
       } catch (error) {
         console.error('刷新 token 失败:', error);
       }
@@ -28,6 +29,8 @@ const Index = () => {
 
     // 首次进入立即刷新
     refreshAccessToken();
+    refreshThumbedMap();
+    console.log('ThumbedMap', ThumbedMap);
 
     // 设置定时器，每10分钟（600000毫秒）刷新一次
     const intervalId = setInterval(refreshAccessToken, 10 * 60 * 1000);

@@ -112,11 +112,11 @@ export const apiCreatePost = async (
     formData.append('content', content);
 
     // @ts-ignore - FormData在RN中可能有entries方法
-    if (formData.entries) {
-      for (let pair of formData.entries()) {
-        console.log('  ', pair[0], '=', pair[1]);
-      }
-    }
+    // if (formData.entries) {
+    //   for (let pair of formData.entries()) {
+    //     console.log('  ', pair[0], '=', pair[1]);
+    //   }
+    // }
 
     if (images && images.length > 0) {
       images.forEach((uri, index) => {

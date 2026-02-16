@@ -70,14 +70,12 @@ axiosJsonInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        console.log('Token 过期，正在刷新...');
+
         // 调用 refresh 接口
         const response = await axiosRefreshInstance.get('/user/refresh');
         const { user_id, access_token, refresh_token } = response;
-
         // 保存新的 tokens
         useUserStore.getState().setTokens(user_id, access_token, refresh_token);
-        console.log('Token 刷新成功');
 
         // 用新 token 重试原请求
         originalRequest.headers.Authorization = `Bearer ${access_token}`;

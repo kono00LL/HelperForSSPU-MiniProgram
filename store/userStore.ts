@@ -1,7 +1,7 @@
+import { apiGetUserThumbs } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
-
 export interface UserInfo {
     user_id: string;
     user_name: string;
@@ -20,6 +20,8 @@ export interface UserInfo {
 
 interface UserStore {
     user: UserInfo | null;
+    // 帖子点赞哈希表：post_id -> isThumbed (boolean)
+    ThumbedMap: Record<string, boolean>;
     accessToken: string | null;
     refreshToken: string | null;
     isLoggedIn: boolean;
@@ -32,18 +34,20 @@ interface UserStore {
     logout: () => void;
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
-
-
+    refreshThumbedMap: () => Promise<void>;
+    clearThumbedMap: () => void;
 }
 export const useUserStore = create<UserStore>()(
     persist(
         (set) => ({
             user: null,
+            ThumbedMap: {},
             accessToken: null,
             refreshToken: null,
             isLoggedIn: false,
             isLoading: false,
             error: null,
+
 
             setUser: (user, accessToken, refreshToken) => {
                 set({
@@ -53,6 +57,39 @@ export const useUserStore = create<UserStore>()(
                     isLoggedIn: true,
                     error: null,
                 });
+            },
+
+            refreshThumbedMap: async () => {
+                try {
+                    const res = await apiGetUserThumbs("post"); // 获取当前用户点赞列表
+
+                    const list = Array.isArray((res as any)?.items)
+                        ? (res as any).items
+                        : Array.isArray(res)
+                            ? res
+                            : [];
+
+                    const hashMap: Record<string, boolean> = {};
+                    for (const item of list) {
+                        if (item && item.entity_id != null) {
+                            hashMap[item.entity_id] = !!item.isThumbed;
+                        }
+                    }
+
+                    set({ ThumbedMap: hashMap });
+
+                    console.log("refreshThumbedMap", hashMap);
+                    console.log(
+                        "点赞映射刷新成功，共",
+                        Object.keys(hashMap).length,
+                        "条"
+                    );
+                } catch (error) {
+                    console.error("刷新点赞映射失败:", error);
+                }
+            },
+            clearThumbedMap: () => {
+                set({ ThumbedMap: {} });
             },
             // 新增：仅更新 access token
             setAccessToken: (accessToken) => {

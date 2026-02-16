@@ -14,8 +14,6 @@ const WechatTest = () => {
 
         setLoading(true);
         try {
-            // 1. 调用微信授权，获取 code
-            console.log('🔄 开始微信授权...');
             const wechatResult = await wechatLogin();
 
             if (!wechatResult.success || !wechatResult.data?.code) {
@@ -24,12 +22,9 @@ const WechatTest = () => {
             }
 
             const code = wechatResult.data.code;
-            console.log('✅ 获取到微信 code:', code);
 
             // 2. 立即将 code 发送到后端（避免过期）
-            console.log('🔄 正在向后端发送 code...');
             const loginResponse = await apiWechatLogin(code);
-            console.log('✅ 后端登录成功:', loginResponse);
 
             // 3. 保存用户信息和 token 到本地
             setUser(

@@ -45,8 +45,6 @@ const CardDisplay = () => {
         try {
             const nextPage = pageStack[pageStack.length - 1] + 1
             setPageStack([...pageStack, nextPage])
-            console.log('nextPage:', nextPage);
-            console.log('pageStack:', pageStack);
 
             await Promise.all([
                 loadSinglePage(nextPage),

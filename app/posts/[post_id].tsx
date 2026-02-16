@@ -4,6 +4,7 @@ import { Post } from "@/interfaces/postInfo";
 import { apiCreateComment } from "@/services/api";
 import useCommentStore from "@/store/commentStore";
 import { usePostStore } from "@/store/postStore";
+import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -11,7 +12,6 @@ import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, Scroll
 import ImageView from "react-native-image-viewing";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
-
 interface PostProps {
   post: Post
 }
@@ -30,6 +30,10 @@ const PostDetails = ({ post }: PostProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addComment = useCommentStore((state) => state.addComment);
 
+  const ThumbedMap = useUserStore((state) => state.ThumbedMap);
+  const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
+  const clearThumbedMap = useUserStore((state) => state.clearThumbedMap);
+
   const previewImage = currentPost?.images.map(item => ({
     uri: item.img_url,
   })) as { uri: string; }[];
@@ -38,6 +42,7 @@ const PostDetails = ({ post }: PostProps) => {
     setVisible(true);
     setCurrentImageIndex(index);
   }
+
 
   const handleSendComment = async () => {
     // 验证评论内容
@@ -77,12 +82,11 @@ const PostDetails = ({ post }: PostProps) => {
     } finally {
       setIsSubmitting(false);
     }
-
-
   }
 
 
   useEffect(() => {
+    refreshThumbedMap();
     if (post_id) {
       fetchPostDetail(post_id);
     }
@@ -222,7 +226,7 @@ const PostDetails = ({ post }: PostProps) => {
 
             </View>
             <TouchableOpacity className="flex-row items-center ml-4">
-              <Image source={icons.love} className="size-6" />
+              <Image source={ThumbedMap[post_id] ? icons.loveH : icons.love} className="size-6" />
               <Text className="font-semibold text-base ml-2">
                 {currentPost.likes}
               </Text>
