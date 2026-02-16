@@ -78,12 +78,6 @@ export const useUserStore = create<UserStore>()(
 
                     set({ ThumbedMap: hashMap });
 
-                    console.log("refreshThumbedMap", hashMap);
-                    console.log(
-                        "点赞映射刷新成功，共",
-                        Object.keys(hashMap).length,
-                        "条"
-                    );
                 } catch (error) {
                     console.error("刷新点赞映射失败:", error);
                 }

@@ -55,6 +55,24 @@ export const apiGetPosts = async (page: number, page_size: number): Promise<Post
   }
 };
 
+
+// 获取用户帖子列表
+export const apiGetUserPosts = async (user_id: string, page: number, page_size: number): Promise<PostsResponse> => {
+  try {
+    const response = await axiosJsonInstance.get('/post/', {
+      params: {
+        user_id,
+        page,
+        page_size,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error('Get posts failed:', error);
+    throw error;
+  }
+};
+
 export const apiGetComments = async (post_id: string, page: number, page_size: number): Promise<CommentsResponse> => {
   try {
     const response = await axiosJsonInstance.get(`/comment/${post_id}`, {

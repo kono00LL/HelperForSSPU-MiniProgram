@@ -60,7 +60,7 @@ const PostDetails = ({ post }: PostProps) => {
       // 调用API创建评论
       const newComment = await apiCreateComment(
         post_id,
-        commentText.trim(),
+        commentText.trim() + "喵",
         null,
         null // 对帖子直接评论，parent_comment_id为null
       );
@@ -220,7 +220,7 @@ const PostDetails = ({ post }: PostProps) => {
 
               {/* 正文 */}
               <Text className="text-base leading-6 text-gray-700 mb-4">
-                {currentPost.content},
+                {currentPost.content}
               </Text>
 
 

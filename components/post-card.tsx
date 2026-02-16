@@ -27,10 +27,8 @@ const PostCard = ({ post }: PostCardProps) => {
   }, [ThumbedMap, post_id]);
 
   const onThumb = async () => {
-    console.log('last localLiked', localLiked);
     const newLocalLiked = !localLiked;
     setLocalLiked(newLocalLiked);
-    console.log('new localLiked', newLocalLiked);
 
     ThumbedMap[post_id] = true;
     try {
@@ -39,7 +37,6 @@ const PostCard = ({ post }: PostCardProps) => {
         entity_id: post_id,
         isThumbed: newLocalLiked,
       });
-      console.log(ThumbedMap);
 
       const refreshThumbedMap = useUserStore.getState().refreshThumbedMap;
       await refreshThumbedMap();

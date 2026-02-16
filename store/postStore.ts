@@ -8,7 +8,10 @@ interface PostStore {
     isLoading: boolean;
     error: string | null;
     postList: Post[];
+    userPostList: Post[];
     addPosts: (posts: Post[]) => void;
+    addUserPosts: (posts: Post[]) => void;
+    clearUserPosts: () => void;
     clearPosts: () => void;
     fetchPostDetail: (post_id: string) => Promise<void>;
     clearCurrentPost: () => void;
@@ -30,6 +33,7 @@ export const usePostStore = create<PostStore>((set, get) => ({
     isLoading: false,
     error: null,
     postList: [],
+    userPostList: [],
 
     fetchPostDetail: async (post_id: string) => {
         set({ isLoading: true, error: null });
@@ -68,6 +72,21 @@ export const usePostStore = create<PostStore>((set, get) => ({
     clearPosts: () => {
         set({ postList: [] });
     },
+    addUserPosts: (posts) => {
+        if (!posts || posts.length === 0) return;
+        const currentUserPostList = get().userPostList;
+        const newUserPostList = posts.filter(
+            (newPost: Post) =>
+                !currentUserPostList.some(
+                    (existingPost) => existingPost.post_id === newPost.post_id
+                )
+        );
+        set({ userPostList: [...currentUserPostList, ...newUserPostList] });
+    },
+    clearUserPosts: () => {
+        set({ userPostList: [] });
+    },
+
 
     draftTitle: "",
     draftContent: "",
