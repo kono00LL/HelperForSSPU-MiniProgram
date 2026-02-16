@@ -1,12 +1,15 @@
 import { wechatLogin } from '@/Utils/wechat';
+import { apiGetUserPosts, apiGetUserProfile } from '@/services/api'; // 添加这一行
 import { apiWechatLogin } from '@/services/authApi';
 import { useUserStore } from '@/store/userStore';
 import React, { useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+
 const WechatTest = () => {
     const [loading, setLoading] = useState(false);
     const { user, isLoggedIn, setUser, logout } = useUserStore();
+    const [verifying, setVerifying] = useState(false);
 
     // 处理微信登录
     const handleWechatLogin = async () => {
@@ -28,12 +31,12 @@ const WechatTest = () => {
 
             // 3. 保存用户信息和 token 到本地
             setUser(
-                loginResponse.user,
-                loginResponse.access_token,
-                loginResponse.refresh_token
+                loginResponse.data.user,
+                loginResponse.data.access_token,
+                loginResponse.data.refresh_token
             );
 
-            Alert.alert('登录成功', `欢迎回来，${loginResponse.user.user_name || '用户'}！`);
+            Alert.alert('登录成功', `欢迎回来，${loginResponse.data.user.user_name || '用户'}！`);
 
         } catch (error: any) {
             console.error('❌ 登录流程失败:', error);
@@ -67,6 +70,53 @@ const WechatTest = () => {
         ]);
     };
 
+    const handleVerifyUserId = async () => {
+        if (!user?.user_id) {
+            Alert.alert('错误', 'user_id 不存在，请先登录');
+            return;
+        }
+
+        setVerifying(true);
+        try {
+
+            const profileData = await apiGetUserProfile(user.user_id, 1, 5);
+
+
+            const postsData = await apiGetUserPosts(user.user_id, 1, 10);
+
+            // 显示验证结果
+            Alert.alert(
+                '✅ 验证成功',
+                `User ID: ${user.user_id}\n` +
+                `用户名: ${profileData.user?.user_name || '未设置'}\n` +
+                `邮箱: ${profileData.user?.user_email || '未设置'}\n` +
+                `城市: ${profileData.user?.city || '未设置'}\n` +
+                `获赞数: ${profileData.user?.likes || 0}\n` +
+                `粉丝数: ${profileData.user?.fans_cnt || 0}\n` +
+                `已发布帖子数: ${postsData.total || 0}个`,
+                [
+                    {
+                        text: '查看详情',
+                        onPress: () => console.log('Profile:', profileData, 'Posts:', postsData)
+                    },
+                    { text: '关闭' }
+                ]
+            );
+        } catch (error: any) {
+            console.error('❌ 验证失败:', error);
+            Alert.alert(
+                '验证失败',
+                `错误信息: ${error.response?.data?.detail || error.message || '未知错误'}\n\n` +
+                `这可能意味着:\n` +
+                `1. user_id 不正确\n` +
+                `2. token 已过期\n` +
+                `3. 网络连接问题`
+            );
+        } finally {
+            setVerifying(false);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>微信登录测试</Text>
@@ -91,6 +141,18 @@ const WechatTest = () => {
                         <Text style={styles.infoLabel}>粉丝数:</Text>
                         <Text style={styles.infoValue}>{user.fans_cnt || 0}</Text>
                     </View>
+
+                    <TouchableOpacity
+                        style={[styles.verifyButton, verifying && styles.buttonDisabled]}
+                        onPress={handleVerifyUserId}
+                        disabled={verifying}
+                    >
+                        {verifying ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.verifyButtonText}>🔍 验证 User ID</Text>
+                        )}
+                    </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.logoutButton}
@@ -203,6 +265,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     logoutButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '600',
+    },
+    verifyButton: {
+        marginTop: 20,
+        backgroundColor: '#3b82f6',
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    verifyButtonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: '600',

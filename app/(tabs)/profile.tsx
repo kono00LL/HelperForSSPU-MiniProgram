@@ -1,13 +1,29 @@
 import UserCardDisplay from "@/components/user-card-display";
 import UserTabBar from "@/components/user-tabbar";
+import { UserProfileResponse } from "@/interfaces/apiTypes";
+import { apiGetUserProfile } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const user = useUserStore((state) => state.user);
-  const user_id = user?.user_id || "";
+  const { user, isLoggedIn, setUser, logout } = useUserStore();
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const profileData = await apiGetUserProfile(user?.user_id || "", 1, 5);
+        setProfileData(profileData);
+      } catch (error) {
+        console.error('获取用户资料失败:', error);
+      }
+    }
+    fetchUserProfile();
+  });
+
+  const displayUser = profileData?.user || user;
   return (
     <SafeAreaView className="flex-1">
       {/* 个人信息头部 */}
@@ -17,12 +33,12 @@ const Profile = () => {
           <View className="flex-row items-center">
             <Image
               source={{
-                uri: user?.avatar_url || "http://110.40.190.116:54128/static/avatar_default/3.jpg"
+                uri: displayUser?.avatar_url || "http://110.40.190.116:54128/static/avatar_default/3.jpg"
               }}
               className="w-16 h-16 rounded-full bg-gray-200"
             />
             <Text className="ml-3 text-lg font-semibold text-gray-900">
-              {user?.user_name || "未登录"}
+              {displayUser?.user_name || "未登录"}
             </Text>
           </View>
 
@@ -61,7 +77,7 @@ const Profile = () => {
         />
         {activeTab === 0 ? (
           <View className="flex-1">
-            <UserCardDisplay user_id={user_id} />
+            <UserCardDisplay user_id={displayUser?.user_id || ""} />
           </View>
         ) : (
           <View>
