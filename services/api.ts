@@ -100,13 +100,46 @@ export const apiWechatLogin = async (js_code: string): Promise<LoginResponse> =>
     throw error;
   }
 }
+
 /**
  * 用户个人信息修改
  * PUT /user/userinfo
+ * multipart/form-data
  */
 export const apiUpdateUserInfo = async (params: UserUpdateParams): Promise<User> => {
   try {
-    const response = await axiosJsonInstance.put('/user/userinfo', params);
+    const formData = new FormData();
+
+    // 添加可选字段（只添加存在的字段）
+    if (params.user_name !== undefined && params.user_name !== null) {
+      formData.append('user_name', params.user_name);
+    }
+    if (params.gender !== undefined && params.gender !== null) {
+      formData.append('gender', params.gender.toString());
+    }
+    if (params.city !== undefined && params.city !== null) {
+      formData.append('city', params.city);
+    }
+
+    // avatar 是文件数组
+    if (params.avatar && params.avatar.length > 0) {
+      params.avatar.forEach((uri) => {
+        const fileName = uri.split('/').pop() || 'avatar.jpg';
+        const fileType = fileName.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+        formData.append('avatar', {
+          uri: uri,
+          type: fileType,
+          name: fileName,
+        } as any);
+      });
+    }
+
+    const response = await axiosJsonInstance.put('/user/userinfo', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   } catch (error) {
     console.error('Update user info failed:', error);

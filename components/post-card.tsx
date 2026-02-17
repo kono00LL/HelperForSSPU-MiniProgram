@@ -1,6 +1,7 @@
 import { icons } from "@/constants/icons";
+import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { Post } from "@/interfaces/postInfo";
-import { apiToggleThumb } from "@/services/api";
+import { apiGetUserProfile, apiToggleThumb } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
 import { Link } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -10,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+
 interface PostCardProps {
   post: Post;
 }
@@ -19,12 +21,24 @@ const PostCard = ({ post }: PostCardProps) => {
   const [localLiked, setLocalLiked] = useState(() => {
     return !!ThumbedMap[post_id];
   });
+  const { user } = useUserStore();
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
+
 
   useEffect(() => {
     if (ThumbedMap[post_id] !== undefined) {
       setLocalLiked(!!ThumbedMap[post_id]);
     }
-  }, [ThumbedMap, post_id]);
+    const fetchUserProfile = async () => {
+      try {
+        const profileData = await apiGetUserProfile(user!.user_id, 1, 5);
+        setProfileData(profileData);
+      } catch (error) {
+        console.error('获取用户资料失败:', error);
+      }
+    }
+    fetchUserProfile();
+  }, [ThumbedMap, post_id, user?.user_id]);
 
   const onThumb = async () => {
     const newLocalLiked = !localLiked;
@@ -52,12 +66,12 @@ const PostCard = ({ post }: PostCardProps) => {
       {/* 用户信息 */}
       <View className="flex-row items-center mb-3">
         <Image
-          source={{ uri: post.user.avatar_url }}
+          source={{ uri: profileData?.user?.avatar_url || 'http://110.40.190.116:54128/static/avatar_default/3.jpg' }}
           className="w-10 h-10 rounded-full"
         />
         <View className="ml-3 flex-1">
           <Text className="font-semibold text-base">
-            {post.user.user_name}
+            {profileData?.user?.user_name || ''}
           </Text>
         </View>
         <View className="ml-6">

@@ -3,7 +3,7 @@ import type { AxiosResponse } from "axios";
 import axios from "axios";
 const BASE_URL = "http://110.40.190.116:54128";
 
-const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE1ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcwNjQ2MzI3LCJleHAiOjE3NzEyNTExMjd9.J2Eee2hHBrrHg974u8Tkgb8Aj4MHR9bsPLZWvTMXqSA";
+const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE1ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcxMzM5MzQ5LCJleHAiOjE3NzE5NDQxNDl9.W6-TDAr8jUdrk3CbttnrPbuH8R68W_JyDb3QOP4UP4I";
 
 const axiosJsonInstance = axios.create({
   baseURL: BASE_URL,

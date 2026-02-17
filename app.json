@@ -51,6 +51,12 @@
             "backgroundColor": "#000000"
           }
         }
+      ],
+      [
+        "react-native-image-picker",
+        {
+          "photosPermission": "允许访问相册以选择头像"
+        }
       ]
     ],
     "experiments": {

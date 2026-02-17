@@ -7,6 +7,7 @@ const discussion = () => {
   return (
     <View>
       <Text>discussion</Text>
+      <Text>?????</Text>
     </View>
   );
 };

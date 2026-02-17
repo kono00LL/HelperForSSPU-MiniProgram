@@ -1,9 +1,11 @@
 import CollectCardDisplay from "@/components/collect-card-display";
 import UserCardDisplay from "@/components/user-card-display";
 import UserTabBar from "@/components/user-tabbar";
+import { icons } from "@/constants/icons";
 import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { apiGetUserProfile } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
+import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,16 +15,20 @@ const Profile = () => {
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
+    if (!user?.user_id) {
+      console.warn('user_id 无效，跳过获取用户资料');
+      return;
+    }
     const fetchUserProfile = async () => {
       try {
-        const profileData = await apiGetUserProfile(user?.user_id || "", 1, 5);
+        const profileData = await apiGetUserProfile(user.user_id, 1, 5);
         setProfileData(profileData);
       } catch (error) {
         console.error('获取用户资料失败:', error);
       }
     }
     fetchUserProfile();
-  });
+  }, [user?.user_id]);
 
   return (
     <SafeAreaView className="flex-1">
@@ -45,6 +51,9 @@ const Profile = () => {
           {/* 校园通按钮 */}
           <TouchableOpacity className="bg-gray-200 px-4 py-2 rounded-full">
             <Text className="text-sm text-gray-700">校园通</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="px-4 py-2" onPress={() => router.push('/edit')}>
+            <Image source={icons.edit} className="size-6" />
           </TouchableOpacity>
         </View>
 
