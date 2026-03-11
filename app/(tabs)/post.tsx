@@ -1,4 +1,5 @@
 import { usePostStore } from "@/store/postStore";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -11,7 +12,6 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
-import { launchImageLibrary } from "react-native-image-picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 const Post = () => {
   const router = useRouter();
@@ -34,12 +34,12 @@ const Post = () => {
       Alert.alert("最多上传9张图片");
     }
 
-    const result = await launchImageLibrary({
-      mediaType: "photo",
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
       selectionLimit: 9 - draftImages.length, // 剩余可选数量
       quality: 0.8,
     });
-    if (result.didCancel || !result.assets) return;
+    if (result.canceled || !result.assets) return;
 
     result.assets.forEach((asset) => {
       if (asset.uri) {

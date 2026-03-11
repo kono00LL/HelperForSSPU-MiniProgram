@@ -1,4 +1,5 @@
 import CommentDisplay from "@/components/comment-display";
+import ImageView from "@/components/ImageViewer";
 import { icons } from "@/constants/icons";
 import { Post } from "@/interfaces/postInfo";
 import { apiCreateComment, apiToggleCollect } from "@/services/api";
@@ -8,8 +9,7 @@ import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-import ImageView from "react-native-image-viewing";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Swiper from "react-native-swiper";
 
@@ -36,6 +36,39 @@ const PostDetails = ({ post }: PostProps) => {
   const refreshCollectedMap = useUserStore((state) => state.refreshCollectedMap);
 
   const CollectedMap = useUserStore((state) => state.CollectedMap);
+
+  const { width: screenWidth } = useWindowDimensions();
+  const [swiperHeight, setSwiperHeight] = useState(100);
+
+  useEffect(() => {
+    if (!currentPost?.images?.length) return;
+
+    const promises = currentPost.images.map(
+      (img) =>
+        new Promise<number>((resolve) => {
+          Image.getSize(
+            img.img_url,
+            (w, h) => {
+              const scaledHeight = (h / w) * (screenWidth - 16);
+              console.log('scaledHeight, screenWidth', scaledHeight, screenWidth);
+
+              resolve(scaledHeight);
+            },
+            () => resolve(100)
+          );
+        })
+    );
+
+    Promise.all(promises).then((heights) => {
+
+      const maxHeight = Math.max(...heights);
+      console.log('maxHeight, screenWidth * 1.1', maxHeight, screenWidth * 1.1);
+      setSwiperHeight(Math.min(maxHeight, screenWidth * 2));
+      console.log('swiperHeight', swiperHeight);
+    });
+  }, [currentPost?.images, screenWidth]);
+
+
   const [localCollected, setLocalCollected] = useState(() => {
     return !!CollectedMap[post_id];
   });
@@ -174,15 +207,15 @@ const PostDetails = ({ post }: PostProps) => {
             {/* 图片区域 */}
             <View className="flex-1">
               {currentPost.images && currentPost.images.length > 0 ? (
-                <View className="px-2 py-2 h-[50vh]">
+                <View className="px-2 py-2" style={{ height: swiperHeight * 1.1 }}>
                   <Swiper
                     style={{ height: '100%' }}
                     showsButtons={false}
                     loop={false}
                     dot={
                       <View style={{
-                        backgroundColor: 'rgba(255,255,255,0.5)',
-                        width: 8,
+                        backgroundColor: '#ccc',
+                        width: 12,
                         height: 8,
                         borderRadius: 4,
                         marginLeft: 3,
@@ -191,7 +224,7 @@ const PostDetails = ({ post }: PostProps) => {
                     }
                     activeDot={
                       <View style={{
-                        backgroundColor: '#fff',
+                        backgroundColor: '#ddd',
                         width: 8,
                         height: 8,
                         borderRadius: 4,
@@ -209,19 +242,17 @@ const PostDetails = ({ post }: PostProps) => {
                         key={img.img_id}
                         activeOpacity={0.9}
                         onPress={() => handleImagePress(index)}
-                        style={{ flex: 1 }}
+                      // style={{ flex: 1 }}
                       >
                         <Image
                           source={{ uri: img.img_url }}
-                          className="w-full h-full"
-                          resizeMode="cover"
+                          style={{ width: '100%', height: swiperHeight }}
+                          resizeMode="contain"
                         />
                       </TouchableOpacity>
                     ))}
                   </Swiper>
-
-
-
+                  <Text>{swiperHeight}</Text>
 
                 </View>
               ) :
@@ -303,9 +334,6 @@ const PostDetails = ({ post }: PostProps) => {
 
     </>
   )
-
-
-
 };
 
 export default PostDetails;

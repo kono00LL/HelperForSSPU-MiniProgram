@@ -1,4 +1,4 @@
-// 安全导入：在 dev 模式下原生模块可能为 null，使用 require + try-catch 防止模块级崩溃
+
 let MP_TYPE: any,
     SCENE: any,
     SCOPE: any,
@@ -125,6 +125,7 @@ export const openWeChat = async () => {
 
 // 导出所有功能供高级使用
 export {
-    MP_TYPE, SCENE, SCOPE, openMiniProgram,
-    pay, shareAudio, shareImage, shareMiniProgram, sharePage, shareText, shareVideo
+    MP_TYPE, openMiniProgram,
+    pay, SCENE, SCOPE, shareAudio, shareImage, shareMiniProgram, sharePage, shareText, shareVideo
 };
+

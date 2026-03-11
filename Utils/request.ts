@@ -1,9 +1,9 @@
 import { useUserStore } from "@/store/userStore";
 import type { AxiosResponse } from "axios";
 import axios from "axios";
-const BASE_URL = "http://110.40.190.116:54128";
+const BASE_URL = "http://101.132.107.118:54128/";
 
-const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ODJkMmExZC1kZWRjLTQ3OTEtYTk0NS0yMmE1ZWUxZTM4MmMiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzcxMzM5MzQ5LCJleHAiOjE3NzE5NDQxNDl9.W6-TDAr8jUdrk3CbttnrPbuH8R68W_JyDb3QOP4UP4I";
+const refreshToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZThkMjhjZi0yOGM1LTRkODItYjk2OC0xY2EwN2U5OTFiNzAiLCJyb2xlIjoidXNlciIsInR5cGUiOiJyZWZyZXNoIiwiaWF0IjoxNzczMTYxNTYzLCJleHAiOjE3NzM3NjYzNjN9.NWWpfile74Q_-yFSFlWs-XAr1j8zjeTPSf3SNkhlhOU";
 
 const axiosJsonInstance = axios.create({
   baseURL: BASE_URL,
