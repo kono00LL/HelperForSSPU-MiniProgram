@@ -2,8 +2,9 @@ import { apiGetUserPosts } from '@/services/api'
 import { usePostStore } from '@/store/postStore'
 import { useUserStore } from '@/store/userStore'
 import React, { useEffect, useState } from 'react'
-import { FlatList, View } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import PostCard from './post-card'
+
 
 interface UserCardDisplayProps {
     user_id: string;
@@ -22,6 +23,11 @@ const CollectCardDisplay = ({ user_id }: UserCardDisplayProps) => {
 
     const CollectedMap = useUserStore((state) => state.CollectedMap)
     const collectedPosts = userPostList.filter(post => CollectedMap[post.post_id])
+
+
+    const leftPosts = collectedPosts.filter((_, i) => i % 2 === 0);
+    const rightPosts = collectedPosts.filter((_, i) => i % 2 === 1);
+
 
     useEffect(() => {
         if (!user_id || user_id.trim() === "") {
@@ -72,19 +78,39 @@ const CollectCardDisplay = ({ user_id }: UserCardDisplayProps) => {
     }
 
     return (
-        <View className='flex-1'>
-            <FlatList
-                data={collectedPosts}
-                renderItem={({ item }) => (
-                    <PostCard post={item} />
-                )}
-                keyExtractor={(item) => item.post_id}
-                contentContainerStyle={{ padding: 8, paddingBottom: 120 }}
-                onEndReached={loadMorePage}
-                onEndReachedThreshold={0.1}
-                refreshing={refreshing}
-            // ListFooterComponent={isLoading ? <ActivityIndicator /> : <Text>加载完成</Text>}
-            />
+        <View className="flex-1 py-2">
+            <ScrollView
+                className="flex-1"
+                contentContainerStyle={{ paddingBottom: 80 }}
+                onScroll={({ nativeEvent }) => {
+                    const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+                    const isNearBottom =
+                        layoutMeasurement.height + contentOffset.y >= contentSize.height - 200; // 距底 200px 触发
+                    if (isNearBottom && hasMore) {
+                        loadMorePage();
+                    }
+                }}
+                scrollEventThrottle={300}
+            >
+                <View className="flex-row px-1 ">
+                    {/* 左列 */}
+                    <View className="flex-1 py-2 ">
+                        {leftPosts.map(post => (
+                            <View key={post.post_id} className="mb-3">
+                                <PostCard post={post} />
+                            </View>
+                        ))}
+                    </View>
+                    {/* 右列 */}
+                    <View className="flex-1 ">
+                        {rightPosts.map(post => (
+                            <View key={post.post_id} className="mb-3">
+                                <PostCard post={post} />
+                            </View>
+                        ))}
+                    </View>
+                </View>
+            </ScrollView>
         </View>
     )
 }

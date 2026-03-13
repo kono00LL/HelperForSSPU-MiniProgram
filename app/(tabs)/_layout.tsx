@@ -8,12 +8,12 @@ import {
 //@ts-ignore
 import { icons } from "@/constants/icons";
 
-function TabIcon({ focused, icon, title }: any) {
+function TabIcon({ focused, icon, title, size = 24 }: any) {
   if (focused) {
     return (
       <View >
         <ImageBackground className="flex flex-1 size-full justify-center items-center">
-          <Image source={icon} className="size-6"></Image>
+          <Image source={icon} style={{ width: size, height: size }}></Image>
           <Text className=" text-base font-semibold">
             {title}
           </Text>
@@ -24,7 +24,7 @@ function TabIcon({ focused, icon, title }: any) {
 
   return (
     <View className="flex flex-1 size-full justify-center items-center">
-      <Image source={icon} className="size-6" />
+      <Image source={icon} style={{ width: size, height: size }} />
     </View>
   );
 }
@@ -96,6 +96,7 @@ export default function TabsLayout() {
               focused={focused}
               icon={icons.post}
               title="发布"
+              size={30}
             />
           ),
         }}
@@ -132,7 +133,7 @@ export default function TabsLayout() {
       />
 
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="wechat-test"
         options={{
           title: "WechatTest",
@@ -145,7 +146,7 @@ export default function TabsLayout() {
             />
           ),
         }}
-      />
+      /> */}
     </Tabs>
 
   );

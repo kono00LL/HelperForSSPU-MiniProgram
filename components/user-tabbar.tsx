@@ -11,7 +11,7 @@ const UserTabBar = ({
 	onTabChange,
 }: TopTabBarProps) => {
 	return (
-		<View className="h-[34px] w-full flex-row bg-white">
+		<View className="h-[34px] w-full flex-row bg-nice-100 border-b border-gray-100">
 			{/* 已发布帖子 Tab */}
 			<TouchableOpacity
 				className="flex-1 items-center justify-center relative"
@@ -21,8 +21,8 @@ const UserTabBar = ({
 				<Text
 					className={
 						activeTab === 0
-							? "font-bold text-blue-600 text-base"
-							: "text-gray-500 text-base"
+							? "font-bold text-white text-base"
+							: "text-gray-300 text-base"
 					}
 				>
 					发布
@@ -42,8 +42,8 @@ const UserTabBar = ({
 				<Text
 					className={
 						activeTab === 1
-							? "font-bold text-blue-600 text-base"
-							: "text-gray-500 text-base"
+							? "font-bold text-white text-base"
+							: "text-gray-300 text-base"
 					}
 				>
 					收藏

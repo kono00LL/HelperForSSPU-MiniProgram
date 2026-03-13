@@ -63,9 +63,23 @@ const Post = () => {
           },
         },
       ]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("发布失败:", error);
-      Alert.alert("发布失败", "请稍后重试");
+
+      const detail: string = error?.response?.data?.detail ?? "";
+
+      const isTitleTooShort = detail.includes("标题长度必须在");
+      const isContentTooShort = detail.includes("内容长度必须在");
+
+      if (isTitleTooShort && isContentTooShort) {
+        Alert.alert("发布失败", "标题和正文字数不足，请补充后再发布");
+      } else if (isTitleTooShort) {
+        Alert.alert("发布失败", "标题字数不足（至少 3 个字符）");
+      } else if (isContentTooShort) {
+        Alert.alert("发布失败", "正文字数不足（至少 5 个字符）");
+      } else {
+        Alert.alert("发布失败", "请稍后重试");
+      }
     } finally {
       setIsPublishing(false);
     }
@@ -76,7 +90,7 @@ const Post = () => {
     <SafeAreaView className="flex-1 bg-white">
       <ScrollView className="flex-1">
         {/* 顶部导航栏 */}
-        <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
+        <View className="flex-row items-center justify-between px-4 py-3">
           {/* 左侧关闭按钮 */}
           <TouchableOpacity
             onPress={() => {
@@ -89,7 +103,7 @@ const Post = () => {
 
           {/* 右侧发布按钮 */}
           <TouchableOpacity
-            className={`px-5 py-2 rounded-full ${draftTitle.trim() && draftContent.trim() && !isPublishing
+            className={`px-5 py-2 rounded-full ${draftTitle.trim().length > 2 && draftContent.trim().length > 5 && !isPublishing
               ? "bg-blue-700"
               : "bg-gray-300"
               }`}
@@ -104,68 +118,78 @@ const Post = () => {
           </TouchableOpacity>
         </View>
 
+        <View className=" bg-nice-10 px-2 mx-3 mt-3 grow rounded-xl">
+          {/* 标题输入框 */}
+          <View className=" bg-nice-20 rounded-xl mt-2 mb-2 px-2">
+            <TextInput
+              className="text-xl font-bold py-4 "
+              placeholder="请输入标题"
+              placeholderTextColor="#f9f9f9"
+              style={{ color: '#f9f9f9' }}
+              value={draftTitle}
+              onChangeText={setDraftTitle}
+              maxLength={30}
+            />
+          </View>
 
-        {/* 标题输入框 */}
-        <TextInput
-          className="text-xl font-bold py-4 border-b border-gray-100"
-          placeholder="请输入标题"
-          placeholderTextColor="#9CA3AF"
-          value={draftTitle}
-          onChangeText={setDraftTitle}
-          maxLength={30}
-        />
 
-        {/* 正文输入框 */}
-        <TextInput
-          className="text-base py-4 min-h-[200px]"
-          placeholder="请输入正文内容..."
-          placeholderTextColor="#9CA3AF"
-          value={draftContent}
-          onChangeText={setDraftContent}
-          multiline
-          textAlignVertical="top"
-        />
+          {/* 正文输入框 */}
+          <View className="flex-1 px-2 bg-white rounded-xl border-[3px] border-gray-200">
+            <TextInput
+              className="text-base py-4 min-h-[300px]"
+              placeholder="请输入正文内容..."
+              placeholderTextColor="#9CA3AF"
+              value={draftContent}
+              onChangeText={setDraftContent}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
 
-        {/* 图片上传 */}
 
-        {/* 图片上传 */}
-        <View className="flex-row flex-wrap gap-2 mt-2 px-4">
-          {draftImages.map((uri, index) => (
-            <View key={index} className="relative">
-              <Image
-                source={{ uri }}
-                className="w-24 h-24 rounded-lg"
-              />
+          {/* 图片上传 */}
+
+          {/* 图片上传 */}
+          <View className="flex-row flex-wrap gap-2 mt-2 px-4">
+            {draftImages.map((uri, index) => (
+              <View key={index} className="relative">
+                <Image
+                  source={{ uri }}
+                  className="w-24 h-24 rounded-lg"
+                />
+                <TouchableOpacity
+                  className="absolute -top-2 -right-2 bg-black/60 rounded-full w-5 h-5 items-center justify-center"
+                  onPress={() => removeDraftImage(index)}
+                >
+                  <Text className="text-white text-xs">✕</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+            {/* 添加图片按钮 */}
+            {draftImages.length < 9 && (
               <TouchableOpacity
-                className="absolute -top-2 -right-2 bg-black/60 rounded-full w-5 h-5 items-center justify-center"
-                onPress={() => removeDraftImage(index)}
+                className="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 items-center justify-center bg-gray-50"
+                onPress={handlePickImage}
               >
-                <Text className="text-white text-xs">✕</Text>
+                <Text className="text-3xl text-gray-400">+</Text>
+                <Text className="text-xs text-gray-400 mt-1">
+                  {draftImages.length}/9
+                </Text>
               </TouchableOpacity>
-            </View>
-          ))}
+            )}
+          </View>
 
-          {/* 添加图片按钮 */}
-          {draftImages.length < 9 && (
-            <TouchableOpacity
-              className="w-24 h-24 rounded-lg border-2 border-dashed border-gray-300 items-center justify-center bg-gray-50"
-              onPress={handlePickImage}
-            >
-              <Text className="text-3xl text-gray-400">+</Text>
-              <Text className="text-xs text-gray-400 mt-1">
-                {draftImages.length}/9
-              </Text>
-            </TouchableOpacity>
-          )}
         </View>
 
 
 
-        {/* 底部工具栏 */}
+        {/*        
         <View className="flex-row items-center px-4 py-3 border-t border-gray-200">
-          <Text>底部工具栏</Text>
 
-        </View>
+
+
+        </View> */}
       </ScrollView>
 
     </SafeAreaView>

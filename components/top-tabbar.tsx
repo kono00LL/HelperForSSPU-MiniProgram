@@ -11,41 +11,45 @@ const TopTabBar = ({
   onTabChange,
 }: TopTabBarProps) => {
   return (
-    <View className="h-[44px] w-full bg-gray-300 flex-row rounded-b-3xl text-white">
-      {/* 校园新闻 Tab */}
-      <TouchableOpacity
-        className={`flex-1 items-center justify-center ${activeTab === 0 ? "bg-white" : ""
-          }`}
-        onPress={() => onTabChange(0)}
-      >
-        <Text
-          className={
-            activeTab === 0
-              ? "font-bold text-black"
-              : "text-white"
-          }
+    <>
+      {/* <View className="h-[34px]"></View> */}
+      <View className="h-[44px] w-full bg-nice-100 flex-row rounded-b-3xl text-white">
+        {/* 校园新闻 Tab */}
+        <TouchableOpacity
+          className={`flex-1 items-center justify-center ${activeTab === 0 ? "" : ""
+            }`}
+          onPress={() => onTabChange(0)}
         >
-          校园新闻
-        </Text>
-      </TouchableOpacity>
+          <Text
+            className={
+              activeTab === 0
+                ? "font-bold text-[20px] text-white"
+                : ""
+            }
+          >
+            校园新闻
+          </Text>
+        </TouchableOpacity>
 
-      {/* 学生讨论 Tab */}
-      <TouchableOpacity
-        className={`flex-1 items-center justify-center ${activeTab === 1 ? "bg-white" : ""
-          }`}
-        onPress={() => onTabChange(1)}
-      >
-        <Text
-          className={
-            activeTab === 1
-              ? "font-bold text-black"
-              : "text-white"
-          }
+        {/* 学生讨论 Tab */}
+        <TouchableOpacity
+          className={`flex-1 items-center justify-center ${activeTab === 1 ? "" : ""
+            }`}
+          onPress={() => onTabChange(1)}
         >
-          学生讨论
-        </Text>
-      </TouchableOpacity>
-    </View>
+          <Text
+            className={
+              activeTab === 1
+                ? "font-bold text-[20px] text-white"
+                : ""
+            }
+          >
+            学生讨论
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </>
+
   );
 };
 

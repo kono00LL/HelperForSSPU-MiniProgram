@@ -42,17 +42,18 @@ const Index = () => {
     };
   }, [setTokens]);
 
-
   return (
     <>
-      <StatusBar style="dark" />
-      <SafeAreaView className="flex-1">
-        <View className=" flex-1 bg-gray-100">
+      <StatusBar style="dark" backgroundColor="#6c92b6" />
+      <SafeAreaView className="flex-1 bg-nice-100" edges={['top', 'left', 'right']}>
+        <View className=" flex-1 bg-bg-100">
+
           <TopTabBar
             activeTab={activeTab}
             onTabChange={setActiveTab}
           />
           {activeTab === 0 ? (
+
             <CardDisplay />
           ) : (
             <View className="flex-1">

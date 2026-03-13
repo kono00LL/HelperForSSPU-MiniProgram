@@ -1,3 +1,8 @@
+import A1 from "@/assets/avatars/a1.png";
+import A2 from "@/assets/avatars/a2.png";
+import A3 from "@/assets/avatars/a3.png";
+import A4 from "@/assets/avatars/a4.png";
+import A5 from "@/assets/avatars/a5.png";
 import album from "@/assets/icons/album.png";
 import camera from "@/assets/icons/camera.png";
 import collectH from "@/assets/icons/collect-h.png";
@@ -14,12 +19,19 @@ import love from "@/assets/icons/love.png";
 import message from "@/assets/icons/message.png";
 import post from "@/assets/icons/post.png";
 import profile from "@/assets/icons/profile.png";
+import publish from "@/assets/icons/publish.png";
 import starH from "@/assets/icons/star-h.png";
 import star from "@/assets/icons/star.png";
 import thumbH from "@/assets/icons/thumb-h.png";
 import thumb from "@/assets/icons/thumb.png";
 import view from "@/assets/icons/view.png";
+import xiaoyuantong from "@/assets/icons/xiaoyuantong.png";
 export const icons = {
+  A1,
+  A2,
+  A3,
+  A4,
+  A5,
   album,
   camera,
   collect,
@@ -41,4 +53,6 @@ export const icons = {
   thumbH,
   view,
   post,
+  publish,
+  xiaoyuantong,
 };

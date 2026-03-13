@@ -1,13 +1,97 @@
 import { icons } from '@/constants/icons';
+import { UserProfileResponse } from '@/interfaces/apiTypes';
 import { Comment } from '@/interfaces/commentInfo';
-import { apiGetComments } from '@/services/api';
+import { apiGetComments, apiGetUserProfile, apiToggleThumb } from '@/services/api';
 import useCommentStore from '@/store/commentStore';
+import { useUserStore } from '@/store/userStore';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+
 interface CommentDisplayProps {
     post_id: string;
+    user_id: string;
 }
 const CommentItem = ({ comment }: { comment: Comment }) => {
+    const CommentThumbedMap = useUserStore((state) => state.CommentThumbedMap);
+    const comment_id = comment.comment_id;
+    const [localLiked, setLocalLiked] = useState(false);
+    const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
+    const { user } = useUserStore();
+
+    const { width: screenWidth } = useWindowDimensions();
+    const [swiperHeight, setSwiperHeight] = useState(100);
+
+    useEffect(() => {
+        if (CommentThumbedMap[comment_id] !== undefined) {
+            setLocalLiked(!!CommentThumbedMap[comment_id]);
+        }
+        const fetchUserProfile = async () => {
+            try {
+                const profileData = await apiGetUserProfile(user!.user_id, 1, 5);
+                setProfileData(profileData);
+            } catch (error) {
+                console.error('获取用户资料失败:', error);
+            }
+        }
+        fetchUserProfile();
+        console.log("CommentThumbedMap", CommentThumbedMap);
+        console.log("profileData", profileData);
+
+
+    }, [CommentThumbedMap, comment_id, user?.user_id]);
+
+    useEffect(() => {
+        if (!comment?.images?.length) return;
+        const promises = comment.images.map(
+            (img) =>
+                new Promise<number>((resolve) => {
+                    Image.getSize(
+                        img.img_url,
+                        (w, h) => {
+                            const scaledHeight = (h / w) * (screenWidth * 0.45);
+                            resolve(scaledHeight);
+                        },
+                        () => resolve(100)
+                    );
+                })
+        );
+
+        Promise.all(promises).then((heights) => {
+            /**
+             * 图片先进行判断，如果大小小于一定值，则为某个最小固定值
+             * 如果大于最小值，则按照比例进行缩放，同时保证不低于最小值
+             * 设置最大值，最后两者也就是缩放后的比例与轨道最大值取其最小值
+             * 规定最小值为150，规定最大值为250
+             */
+            const MIN = 150;
+            const MAX = 250;
+            const maxHeight = Math.max(...heights);
+            const clamped = Math.min(Math.max(maxHeight, MIN), MAX);
+            setSwiperHeight(clamped);
+        });
+    }, [comment?.images, screenWidth]);
+
+
+    const onThumb = async () => {
+        const newLocalLiked = !localLiked;
+        setLocalLiked(newLocalLiked);
+
+        CommentThumbedMap[comment_id] = true;
+        try {
+            await apiToggleThumb({
+                entity_type: "comment",
+                entity_id: comment_id,
+                isThumbed: newLocalLiked,
+            });
+
+            const refreshCommentThumbedMap = useUserStore.getState().refreshCommentThumbedMap;
+            await refreshCommentThumbedMap();
+
+        } catch (error) {
+            console.error('Toggle thumb failed:', error);
+            setLocalLiked(localLiked);
+        }
+    }
 
     return (
         <>
@@ -48,6 +132,9 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                         <View className="flex-row items-center  gap-4">
                             <TouchableOpacity className="flex-row ml-[200px]">
                                 <Image source={icons.message} className="size-6" />
+                            </TouchableOpacity>
+                            <TouchableOpacity className="flex-row items-center ml-4" onPress={onThumb} activeOpacity={1} >
+                                <Image source={localLiked ? icons.loveH : icons.love} className="size-6" />
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -121,17 +208,16 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
         )
     }
 
-
     return (
-        <View className="flex-1 px-4 py-4">
-            <View className="flex-row items-center justify-between mb-4">
-                <Text className="text-lg font-bold">
-                    评论
+        <View className="flex-1 px-4 py-4 ">
+            <View className="flex-row items-center justify-between mb-4 -mx-4 bg-nice-100">
+                <Text className="text-lg font-bold text-white py-1 px-4">
+                    评论{total}
                 </Text>
-                <Text className="text-sm text-gray-500">{total}条评论</Text>
-
+                {/* TODO 最好做成吸顶 */}
             </View>
             {/* 评论列表 */}
+            {/* TODO 组件样式还能再优化一些 */}
             <FlatList
                 data={comments}
                 renderItem={({ item }) => <CommentItem comment={item} />}
@@ -139,10 +225,10 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
                 ListFooterComponent={renderFooter}
                 ListEmptyComponent={renderEmpty}
                 nestedScrollEnabled
+                style={{ width: '100%' }}
+                contentContainerStyle={{ flexGrow: 1 }}
                 scrollEnabled={false}
             />
-
-
         </View>
 
     )

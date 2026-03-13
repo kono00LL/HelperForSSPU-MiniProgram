@@ -8,11 +8,11 @@ import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Swiper from "react-native-swiper";
-
 interface PostProps {
   post: Post
 }
@@ -38,7 +38,7 @@ const PostDetails = ({ post }: PostProps) => {
   const CollectedMap = useUserStore((state) => state.CollectedMap);
 
   const { width: screenWidth } = useWindowDimensions();
-  const [swiperHeight, setSwiperHeight] = useState(100);
+  const [swiperHeight, setSwiperHeight] = useState(200);
 
   useEffect(() => {
     if (!currentPost?.images?.length) return;
@@ -50,8 +50,6 @@ const PostDetails = ({ post }: PostProps) => {
             img.img_url,
             (w, h) => {
               const scaledHeight = (h / w) * (screenWidth - 16);
-              console.log('scaledHeight, screenWidth', scaledHeight, screenWidth);
-
               resolve(scaledHeight);
             },
             () => resolve(100)
@@ -62,9 +60,7 @@ const PostDetails = ({ post }: PostProps) => {
     Promise.all(promises).then((heights) => {
 
       const maxHeight = Math.max(...heights);
-      console.log('maxHeight, screenWidth * 1.1', maxHeight, screenWidth * 1.1);
       setSwiperHeight(Math.min(maxHeight, screenWidth * 2));
-      console.log('swiperHeight', swiperHeight);
     });
   }, [currentPost?.images, screenWidth]);
 
@@ -149,7 +145,7 @@ const PostDetails = ({ post }: PostProps) => {
 
   if (isLoading) {
     return (
-      <View>
+      <View className="flex-1 bg-white justify-center items-center">
         <ActivityIndicator size="large" color="#3b82f6" />
         <Text className="text-center text-gray-400 mt-4">Loading...</Text>
       </View>
@@ -173,7 +169,8 @@ const PostDetails = ({ post }: PostProps) => {
 
   return (
     <>
-      <SafeAreaView className="flex-1" edges={['top', 'left', 'right']}>
+      <StatusBar backgroundColor="#6c92b6" style="dark" />
+      <SafeAreaView className="flex-1" edges={['left', 'right']}>
         <KeyboardAvoidingView
           className="flex-1 "
           behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
@@ -181,22 +178,20 @@ const PostDetails = ({ post }: PostProps) => {
         // keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
         >
           { /* 顶部区域 */}
-          <View className="flex-row px-4 py-3">
+          <View className="flex-row px-4 py-3 bg-nice-100">
             <TouchableOpacity
               onPress={() => router.back()}
-              className="mr-20"
+              className="mr-20 mt-8"
             >
               <Ionicons name="arrow-back" size={24} color="#000" />
             </TouchableOpacity>
             <Image
               source={{ uri: currentPost?.user?.avatar_url }}
-              className="w-10 h-10 rounded-full ml-10"
+              className="w-10 h-10 rounded-full ml-10 mt-6"
             />
-            <Text className="ml-3 text-base font-semibold flex-1">
+            <Text className="ml-3 text-medium font-semibold flex-1 mt-8">
               {currentPost.user.user_name}
             </Text>
-
-
           </View>
           <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
@@ -207,35 +202,11 @@ const PostDetails = ({ post }: PostProps) => {
             {/* 图片区域 */}
             <View className="flex-1">
               {currentPost.images && currentPost.images.length > 0 ? (
-                <View className="px-2 py-2" style={{ height: swiperHeight * 1.1 }}>
-                  <Swiper
-                    style={{ height: '100%' }}
-                    showsButtons={false}
-                    loop={false}
-                    dot={
-                      <View style={{
-                        backgroundColor: '#ccc',
-                        width: 12,
-                        height: 8,
-                        borderRadius: 4,
-                        marginLeft: 3,
-                        marginRight: 3,
-                      }} />
-                    }
-                    activeDot={
-                      <View style={{
-                        backgroundColor: '#ddd',
-                        width: 8,
-                        height: 8,
-                        borderRadius: 4,
-                        marginLeft: 3,
-                        marginRight: 3,
-                      }} />
-                    }
-                    paginationStyle={{
-                      bottom: 10,
-                    }}
-                    onIndexChanged={(index) => setCurrentImageIndex(index)}
+                <View className="px-2 py-2" style={{ height: swiperHeight }}>
+                  <PagerView
+                    style={{ height: swiperHeight }}
+                    initialPage={0}
+                    onPageSelected={(event) => setCurrentImageIndex(event.nativeEvent.position)}
                   >
                     {currentPost.images.map((img, index) => (
                       <TouchableOpacity
@@ -251,9 +222,7 @@ const PostDetails = ({ post }: PostProps) => {
                         />
                       </TouchableOpacity>
                     ))}
-                  </Swiper>
-                  <Text>{swiperHeight}</Text>
-
+                  </PagerView>
                 </View>
               ) :
                 <View className="h-[50vh] px-2 py-2 bg-white ">
@@ -284,7 +253,7 @@ const PostDetails = ({ post }: PostProps) => {
 
             {/* 评论区域 */}
             <View className="min-h-[200px]">
-              <CommentDisplay post_id={post_id!} />
+              <CommentDisplay post_id={post_id} user_id={currentPost.user.user_id} />
             </View>
 
           </ScrollView>

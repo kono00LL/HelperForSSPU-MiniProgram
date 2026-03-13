@@ -1,6 +1,8 @@
+import { icons } from '@/constants/icons';
 import { UserProfileResponse, UserUpdateParams } from '@/interfaces/apiTypes';
 import { apiGetUserProfile, apiUpdateUserInfo } from '@/services/api';
 import { useUserStore } from '@/store/userStore';
+import { Asset } from 'expo-asset';
 import { router, Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
@@ -15,12 +17,20 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 
+
 const Edit = () => {
+    const AVATARS = [
+        { key: 'A1', source: icons.A1 },
+        { key: 'A2', source: icons.A2 },
+        { key: 'A3', source: icons.A3 },
+        { key: 'A4', source: icons.A4 },
+        { key: 'A5', source: icons.A5 },
+    ];
+
     const { user, setUser } = useUserStore();
     const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +43,9 @@ const Edit = () => {
 
     // 性别选择器显示状态
     const [showGenderPicker, setShowGenderPicker] = useState(false);
+
+    const [selectedAvatarKey, setSelectedAvatarKey] = useState<string>('A2');
+    const [showAvatarPicker, setShowAvatarPicker] = useState(false);
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
@@ -51,28 +64,8 @@ const Edit = () => {
 
     // 头像选择
     const handlePickAvatar = () => {
-        launchImageLibrary(
-            {
-                mediaType: 'photo',
-                maxWidth: 800,
-                maxHeight: 800,
-                quality: 0.8,
-                selectionLimit: 1,
-            },
-            (response) => {
-                if (response.didCancel) {
-                    console.log('用户取消选择');
-                } else if (response.errorCode) {
-                    console.error('选择图片错误:', response.errorMessage);
-                    Alert.alert('错误', '选择图片失败，请重试');
-                } else if (response.assets && response.assets[0]) {
-                    const asset = response.assets[0];
-                    setAvatarUri(asset.uri);
-                }
-            }
-        );
+        setShowAvatarPicker(true);
     };
-
     // 保存修改
     const handleSave = async () => {
         if (!userName.trim()) {
@@ -87,8 +80,14 @@ const Edit = () => {
                 gender: gender,
                 city: city,
             };
-            if (avatarUri && avatarUri !== user?.avatar_url) {
-                params.avatar = [avatarUri];
+            const selectedAvatar = AVATARS.find(a => a.key === selectedAvatarKey);
+            if (selectedAvatar) {
+                const asset = Asset.fromModule(selectedAvatar.source);
+                await asset.downloadAsync();
+                const localUri = asset.localUri;
+                if (localUri) {
+                    params.avatar = [localUri];
+                }
             }
 
             console.log('发送更新请求:', params);
@@ -155,11 +154,34 @@ const Edit = () => {
                         onPress={handlePickAvatar}
                     >
                         <Image
-                            source={{ uri: profileData?.user?.avatar_url || 'http://110.40.190.116:54128/static/avatar_default/3.jpg' }}
+                            source={AVATARS.find(a => a.key === selectedAvatarKey)?.source}
                             className="w-20 h-20 rounded-full bg-gray-200 mb-2"
                         />
                         <Text className="text-gray-500 text-sm">点击修改头像</Text>
                     </TouchableOpacity>
+
+                    {/* 头像选择面板 */}
+                    {showAvatarPicker && (
+                        <View className="bg-white py-4 flex-row justify-around border-b border-gray-200">
+                            {AVATARS.map((avatar) => (
+                                <TouchableOpacity
+                                    key={avatar.key}
+                                    onPress={() => {
+                                        setSelectedAvatarKey(avatar.key);
+                                        setShowAvatarPicker(false);
+                                    }}
+                                >
+                                    <Image
+                                        source={avatar.source}
+                                        className={`w-14 h-14 rounded-full ${selectedAvatarKey === avatar.key
+                                            ? 'border-2 border-blue-500'
+                                            : ''
+                                            }`}
+                                    />
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    )}
 
                     {/* 昵称 */}
                     <View className="bg-white px-4 py-3 flex-row items-center justify-between border-b border-gray-200">

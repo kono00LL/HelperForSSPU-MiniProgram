@@ -1,4 +1,3 @@
-import { apiGetUserCollects, apiGetUserThumbs } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -23,6 +22,7 @@ interface UserStore {
     user: UserInfo | null;
     // 帖子点赞哈希表：post_id -> isThumbed (boolean)
     ThumbedMap: Record<string, boolean>;
+    CommentThumbedMap: Record<string, boolean>;
     CollectedMap: Record<string, boolean>;
     accessToken: string | null;
     refreshToken: string | null;
@@ -37,8 +37,10 @@ interface UserStore {
     setLoading: (loading: boolean) => void;
     setError: (error: string | null) => void;
     refreshThumbedMap: () => Promise<void>;
+    refreshCommentThumbedMap: () => Promise<void>;
     refreshCollectedMap: () => Promise<void>;
     clearThumbedMap: () => void;
+    clearCommentThumbedMap: () => void;
     clearCollectedMap: () => void;
 }
 export const useUserStore = create<UserStore>()(
@@ -46,6 +48,7 @@ export const useUserStore = create<UserStore>()(
         (set) => ({
             user: null,
             ThumbedMap: {},
+            CommentThumbedMap: {},
             CollectedMap: {},
             accessToken: null,
             refreshToken: null,
@@ -66,10 +69,11 @@ export const useUserStore = create<UserStore>()(
 
             refreshThumbedMap: async () => {
                 try {
-                    const res = await apiGetUserThumbs("post"); // 获取当前用户点赞列表
+                    const { apiGetUserThumbs } = require("@/services/api");
+                    const res = await apiGetUserThumbs("post");
 
-                    const list = Array.isArray((res as any)?.items)
-                        ? (res as any).items
+                    const list = Array.isArray((res)?.items)
+                        ? (res).items
                         : Array.isArray(res)
                             ? res
                             : [];
@@ -90,12 +94,41 @@ export const useUserStore = create<UserStore>()(
             clearThumbedMap: () => {
                 set({ ThumbedMap: {} });
             },
+            refreshCommentThumbedMap: async () => {
+                try {
+                    const { apiGetUserThumbs } = require("@/services/api");
+                    const res = await apiGetUserThumbs("comment");
+
+                    const list = Array.isArray((res)?.items)
+                        ? (res).items
+                        : Array.isArray(res)
+                            ? res
+                            : [];
+
+                    const hashMap: Record<string, boolean> = {};
+                    for (const item of list) {
+                        if (item && item.entity_id != null) {
+                            hashMap[item.entity_id] = !!item.isThumbed;
+                        }
+                    }
+
+                    set({ CommentThumbedMap: hashMap });
+
+                } catch (error) {
+                    console.error("刷新点赞映射失败:", error);
+                }
+
+            },
+            clearCommentThumbedMap: () => {
+                set({ CommentThumbedMap: {} });
+            },
             refreshCollectedMap: async () => {
                 try {
+                    const { apiGetUserCollects } = require("@/services/api");
                     const res = await apiGetUserCollects();
-                    // 处理可能的数据格式
-                    const list = Array.isArray((res as any)?.data)
-                        ? (res as any).data
+
+                    const list = Array.isArray((res)?.data)
+                        ? (res).data
                         : Array.isArray(res)
                             ? res
                             : [];
