@@ -17,6 +17,10 @@ export default function RootLayout() {
         name="posts/[post_id]"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="users/[user_id]"
+        options={{ headerShown: false }}
+      />
 
     </Stack>
   );

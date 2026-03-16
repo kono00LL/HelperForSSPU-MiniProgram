@@ -4,7 +4,7 @@ import { Post } from "@/interfaces/postInfo";
 
 import { apiGetUserProfile, apiToggleThumb } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Image,
@@ -102,21 +102,33 @@ const PostCard = ({ post }: PostCardProps) => {
   return (
     <View className="bg-white p-1 shadow-md border-gray-600 border mb-2 mx-1">
       {/* 用户信息 */}
-      <View className="flex-row items-center mb-3">
-        <Image
-          source={{ uri: profileData?.user?.avatar_url || 'http://101.132.107.118:54128/static/avatar_default/3.jpg' }}
-          className="w-10 h-10 rounded-full"
-        />
-        <View className="ml-3 flex-1">
-          <Text className="font-semibold text-base">
-            {profileData?.user?.user_name || ''}
-          </Text>
-        </View>
-        <View className="ml-2">
-          <TouchableOpacity className="flex-row items-center ml-4" onPress={onThumb} activeOpacity={1} >
-            <Image source={localLiked ? icons.loveH : icons.love} className="size-6" />
-          </TouchableOpacity>
-        </View>
+      <View className="mb-3 flex-row items-center">
+
+        <TouchableOpacity
+          onPress={() => router.push({
+            pathname: "/users/[user_id]",
+            params: {
+              user_id: profileData?.user.user_id
+            }
+          })}
+          className="flex-1 flex-row items-center"
+        >
+          <Image
+            source={{ uri: profileData?.user?.avatar_url || 'http://101.132.107.118:54128/static/avatar_default/3.jpg' }}
+            className="w-10 h-10 rounded-full"
+          />
+          <View className="ml-3 flex-1">
+            <Text className="font-semibold text-base">
+              {profileData?.user?.user_name || ''}
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+
+        <TouchableOpacity className="flex-row items-center mr-2" onPress={onThumb} activeOpacity={1} >
+          <Image source={localLiked ? icons.loveH : icons.love} className="size-6" />
+        </TouchableOpacity>
+
         {/* <View className="ml-1">
           <Image source={icons.star} className="size-6" />
         </View> */}
@@ -143,7 +155,6 @@ const PostCard = ({ post }: PostCardProps) => {
               {post.title}
 
             </Text>
-            <Text>{swiperHeight}</Text>
           </View>
 
         </Link>

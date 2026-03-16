@@ -181,17 +181,28 @@ const PostDetails = ({ post }: PostProps) => {
           <View className="flex-row px-4 py-3 bg-nice-100">
             <TouchableOpacity
               onPress={() => router.back()}
-              className="mr-20 mt-8"
+              className="mr-20 mt-10"
             >
               <Ionicons name="arrow-back" size={24} color="#000" />
             </TouchableOpacity>
-            <Image
-              source={{ uri: currentPost?.user?.avatar_url }}
-              className="w-10 h-10 rounded-full ml-10 mt-6"
-            />
-            <Text className="ml-3 text-medium font-semibold flex-1 mt-8">
-              {currentPost.user.user_name}
-            </Text>
+            <TouchableOpacity
+              onPress={() => router.push({
+                pathname: "/users/[user_id]",
+                params: {
+                  user_id: currentPost.user.user_id
+                }
+              })}
+              className="flex-row items-center mt-4"
+            >
+              <Image
+                source={{ uri: currentPost?.user?.avatar_url }}
+                className="w-10 h-10 rounded-full ml-10 mt-6"
+              />
+              <Text className="ml-3 text-medium font-semibold mt-5">
+                {currentPost.user.user_name}
+              </Text>
+            </TouchableOpacity>
+
           </View>
           <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
