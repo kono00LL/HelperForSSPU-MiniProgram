@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 interface PostProps {
@@ -21,6 +21,7 @@ const PostDetails = ({ post }: PostProps) => {
   const { post_id } = useLocalSearchParams<{ post_id: string }>();
   const currentPost = usePostStore((state) => state.currentPost);
   const isLoading = usePostStore((state) => state.isLoading);
+  const [refreshing, setRefreshing] = useState(false)
   const error = usePostStore((state) => state.error);
   const fetchPostDetail = usePostStore((state) => state.fetchPostDetail);
   const clearCurrentPost = usePostStore((state) => state.clearCurrentPost);
@@ -30,6 +31,7 @@ const PostDetails = ({ post }: PostProps) => {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addComment = useCommentStore((state) => state.addComment);
+  const clearComments = useCommentStore((state) => state.clearComments);
 
   const ThumbedMap = useUserStore((state) => state.ThumbedMap);
   const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
@@ -128,6 +130,22 @@ const PostDetails = ({ post }: PostProps) => {
   };
 
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([
+        fetchPostDetail(post_id),
+        refreshThumbedMap(),
+        refreshCollectedMap(),
+      ]);
+    } catch (error) {
+      console.error("Refresh failed:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
+
   useEffect(() => {
     refreshThumbedMap();
     refreshCollectedMap();
@@ -207,7 +225,10 @@ const PostDetails = ({ post }: PostProps) => {
           <ScrollView keyboardShouldPersistTaps="handled"
             contentContainerStyle={{
               paddingBottom: 40
-            }}>
+            }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+            }>
 
 
             {/* 图片区域 */}

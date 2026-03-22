@@ -1,21 +1,22 @@
 import { apiGetUserPosts } from '@/services/api'
 import { usePostStore } from '@/store/postStore'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import PostCard from './post-card'
 
 interface UserCardDisplayProps {
     user_id: string;
+    refreshing?: boolean;
+    onRefresh?: () => void;
 }
 
-const UserCardDisplay = ({ user_id }: UserCardDisplayProps) => {
+const UserCardDisplay = ({ user_id, refreshing = false, onRefresh }: UserCardDisplayProps) => {
 
     const [posts, setPosts] = useState()
     const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 5;
     const [pageStack, setPageStack] = useState<number[]>([0])
-    const [refreshing, setRefreshing] = useState(false)
     const userPostList = usePostStore((state) => state.userPostList)
     const addUserPosts = usePostStore((state) => state.addUserPosts)
 
@@ -49,10 +50,6 @@ const UserCardDisplay = ({ user_id }: UserCardDisplayProps) => {
     }
 
     const loadMorePage = async () => {
-        if (!hasMore) {
-            setRefreshing(false)
-            return;
-        }
 
         try {
             const nextPage = pageStack[pageStack.length - 1] + 1
@@ -65,8 +62,6 @@ const UserCardDisplay = ({ user_id }: UserCardDisplayProps) => {
         } catch (error) {
             setHasMore(false)
             console.error(`Load more page failed:`, error)
-        } finally {
-            setRefreshing(false)
         }
 
     }
@@ -76,6 +71,9 @@ const UserCardDisplay = ({ user_id }: UserCardDisplayProps) => {
             <ScrollView
                 className="flex-1"
                 contentContainerStyle={{ paddingBottom: 80 }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing || false} onRefresh={onRefresh} />
+                }
                 onScroll={({ nativeEvent }) => {
                     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
                     const isNearBottom =

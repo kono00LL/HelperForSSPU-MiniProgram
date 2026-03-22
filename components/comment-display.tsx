@@ -5,7 +5,7 @@ import { apiGetComments, apiGetUserProfile, apiToggleThumb } from '@/services/ap
 import useCommentStore from '@/store/commentStore';
 import { useUserStore } from '@/store/userStore';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Image, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { ActivityIndicator, FlatList, Image, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 
 interface CommentDisplayProps {
     post_id: string;
@@ -34,8 +34,6 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
             }
         }
         fetchUserProfile();
-        console.log("CommentThumbedMap", CommentThumbedMap);
-        console.log("profileData", profileData);
 
 
     }, [CommentThumbedMap, comment_id, user?.user_id]);
@@ -146,16 +144,19 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
 const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
 
     const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false)
     const [hasMore, setHasMore] = useState(true);
     const [total, setTotal] = useState(0);
     const [pageStack, setPageStack] = useState<number[]>([0])
     const pageSize = 40;
     const comments = useCommentStore((state) => state.comments[post_id])
     const addComments = useCommentStore((state) => state.addComments)
+    const clearComments = useCommentStore((state) => state.clearComments)
 
 
     const loadSinglePage = async (page: number) => {
         if (!hasMore) return;
+        setLoading(true);
         try {
             const response = await apiGetComments(post_id, page, pageSize)
             setTotal(response.total)
@@ -166,6 +167,8 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
             addComments(post_id, response.items)
         } catch (error) {
             console.error(`Load comment ${page} page failed:`, error)
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -185,11 +188,36 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
 
     }
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        clearComments(post_id);
+        setPageStack([0]);
+        setHasMore(true);
+        try {
+            const response = await apiGetComments(post_id, 1, pageSize);
+            if (1 > response.total_pages) {
+                setHasMore(false);
+            } else {
+                addComments(post_id, response.items);
+                setPageStack([0, 1]);
+            }
+        } catch (error) {
+            console.error("Refresh failed:", error);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     useEffect(() => {
         loadMorePage()
     }, [])
 
     const renderFooter = () => {
+        if (loading) return (
+            <View className="py-4 items-center">
+                <ActivityIndicator size="small" color="#3b82f6" />
+            </View>
+        )
         if (!hasMore) return (
             <View>
                 <Text className="py-4 text-center text-gray-400 text-sm">
@@ -228,6 +256,8 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
                 style={{ width: '100%' }}
                 contentContainerStyle={{ flexGrow: 1 }}
                 scrollEnabled={false}
+                refreshing={refreshing}
+                onRefresh={handleRefresh}
             />
         </View>
 

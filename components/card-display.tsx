@@ -1,7 +1,7 @@
 import { apiGetPosts } from '@/services/api'
 import { usePostStore } from '@/store/postStore'
 import React, { useEffect, useState } from 'react'
-import { ScrollView, View } from 'react-native'
+import { RefreshControl, ScrollView, View } from 'react-native'
 import PostCard from './post-card'
 
 const CardDisplay = () => {
@@ -15,6 +15,7 @@ const CardDisplay = () => {
     const isLoading = usePostStore((state) => state.isLoading)
     const postList = usePostStore((state) => state.postList)
     const addPosts = usePostStore((state) => state.addPosts)
+    const clearPosts = usePostStore((state) => state.clearPosts)
 
     const leftPosts = postList.filter((_, i) => i % 2 === 0);
     const rightPosts = postList.filter((_, i) => i % 2 === 1);
@@ -63,11 +64,34 @@ const CardDisplay = () => {
 
     }
 
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        clearPosts();
+        setPageStack([0]);
+        setHasMore(true);
+        try {
+            const response = await apiGetPosts(1, pageSize);
+            if (1 > response.total_pages) {
+                setHasMore(false);
+            } else {
+                addPosts(response.items);
+                setPageStack([0, 1]);
+            }
+        } catch (error) {
+            console.error("Refresh failed:", error);
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
     return (
         <View className="flex-1">
             <ScrollView
                 className="flex-1"
                 contentContainerStyle={{ paddingBottom: 80 }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
                 onScroll={({ nativeEvent }) => {
                     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
                     const isNearBottom =

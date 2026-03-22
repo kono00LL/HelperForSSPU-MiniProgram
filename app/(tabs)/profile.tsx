@@ -6,31 +6,45 @@ import { images } from "@/constants/images";
 import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { apiGetUserProfile } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
-import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
+import React, { useCallback, useState } from "react";
 import { Image, ImageBackground, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useUserStore();
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
+  const [refreshing, setRefreshing] = useState(false)
 
-  useEffect(() => {
-    if (!user?.user_id) {
-      console.warn('user_id 无效，跳过获取用户资料');
-      return;
+  useFocusEffect(
+    useCallback(() => {
+      if (!user?.user_id) return;
+      const fetchUserProfile = async () => {
+        try {
+          const data = await apiGetUserProfile(user.user_id, 1, 5);
+          setProfileData(data);
+        } catch (error) {
+          console.error('获取用户资料失败:', error);
+        }
+      };
+      fetchUserProfile();
+    }, [user?.user_id])
+  );
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const profileData = await apiGetUserProfile(user?.user_id || "", 1, 5);
+      setProfileData(profileData);
+    } catch (error) {
+      console.error('获取用户资料失败:', error);
+    } finally {
+      setRefreshing(false);
     }
-    const fetchUserProfile = async () => {
-      try {
-        const profileData = await apiGetUserProfile(user.user_id, 1, 5);
-        setProfileData(profileData);
-      } catch (error) {
-        console.error('获取用户资料失败:', error);
-      }
-    }
-    fetchUserProfile();
-  }, [user?.user_id]);
+
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -45,9 +59,9 @@ const Profile = () => {
             {/* 头像和用户名 */}
             <View className="flex-row items-center">
               <Image
-                source={{
-                  uri: profileData?.user?.avatar_url || "http://101.132.107.118:54128/static/avatar_default/3.jpg"
-                }}
+                source={profileData?.user?.avatar_url
+                  ? { uri: profileData.user.avatar_url }
+                  : icons.A0}
                 className="w-20 h-20 rounded-full bg-gray-200"
               />
               <Text className="ml-3 text-2xl font-semibold text-gray-900 " onPress={() => router.push('/edit')}>
@@ -93,11 +107,17 @@ const Profile = () => {
         />
         {activeTab === 0 ? (
           <View className="flex-1 bg-bg-100">
-            <UserCardDisplay user_id={profileData?.user?.user_id || ""} />
+            <UserCardDisplay user_id={profileData?.user?.user_id || ""}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+            />
           </View>
         ) : (
           <View className="flex-1 bg-bg-100">
-            <CollectCardDisplay user_id={profileData?.user?.user_id || ""} />
+            <CollectCardDisplay user_id={profileData?.user?.user_id || ""}
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+            />
           </View>
         )}
       </View>

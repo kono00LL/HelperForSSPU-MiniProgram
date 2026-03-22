@@ -114,12 +114,14 @@ const PostCard = ({ post }: PostCardProps) => {
           className="flex-1 flex-row items-center"
         >
           <Image
-            source={{ uri: profileData?.user?.avatar_url || 'http://101.132.107.118:54128/static/avatar_default/3.jpg' }}
+            source={profileData?.user?.avatar_url
+              ? { uri: profileData.user.avatar_url }
+              : icons.A0}
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-3 flex-1">
             <Text className="font-semibold text-base">
-              {profileData?.user?.user_name || ''}
+              {profileData?.user?.user_name || '未知用户'}
             </Text>
           </View>
         </TouchableOpacity>

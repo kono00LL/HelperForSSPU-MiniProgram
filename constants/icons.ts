@@ -1,3 +1,4 @@
+import A0 from "@/assets/avatars/a0.png";
 import A1 from "@/assets/avatars/a1.png";
 import A2 from "@/assets/avatars/a2.png";
 import A3 from "@/assets/avatars/a3.png";
@@ -27,6 +28,7 @@ import thumb from "@/assets/icons/thumb.png";
 import view from "@/assets/icons/view.png";
 import xiaoyuantong from "@/assets/icons/xiaoyuantong.png";
 export const icons = {
+  A0,
   A1,
   A2,
   A3,
