@@ -2,7 +2,7 @@ import CommentDisplay from "@/components/comment-display";
 import ImageView from "@/components/ImageViewer";
 import { icons } from "@/constants/icons";
 import { Post } from "@/interfaces/postInfo";
-import { apiCreateComment, apiToggleCollect } from "@/services/api";
+import { apiCreateComment, apiToggleCollect, apiToggleThumb } from "@/services/api";
 import useCommentStore from "@/store/commentStore";
 import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 interface PostProps {
   post: Post
 }
-
+//TODO 有些臃肿了
 const PostDetails = ({ post }: PostProps) => {
   const { post_id } = useLocalSearchParams<{ post_id: string }>();
   const currentPost = usePostStore((state) => state.currentPost);
@@ -33,9 +33,19 @@ const PostDetails = ({ post }: PostProps) => {
   const addComment = useCommentStore((state) => state.addComment);
   const clearComments = useCommentStore((state) => state.clearComments);
 
+
   const ThumbedMap = useUserStore((state) => state.ThumbedMap);
+  const [localLiked, setLocalLiked] = useState(() => {
+    return !!ThumbedMap[post_id];
+  });
+  const [localLikes, setLocalLikes] = useState(() => {
+    return currentPost?.likes || 0;
+    
+  });
   const refreshThumbedMap = useUserStore((state) => state.refreshThumbedMap);
   const refreshCollectedMap = useUserStore((state) => state.refreshCollectedMap);
+
+  const [isRequesting, setIsRequesting] = useState(false);
 
   const CollectedMap = useUserStore((state) => state.CollectedMap);
 
@@ -65,6 +75,18 @@ const PostDetails = ({ post }: PostProps) => {
       setSwiperHeight(Math.min(maxHeight, screenWidth * 2));
     });
   }, [currentPost?.images, screenWidth]);
+
+  useEffect(() => {
+    if (ThumbedMap[post_id] !== undefined) {
+      setLocalLiked(!!ThumbedMap[post_id]);
+    }
+  }, [ThumbedMap, post_id]);
+
+  useEffect(() => {
+    if (currentPost?.likes !== undefined) {
+      setLocalLikes(currentPost.likes);
+    }
+  }, [currentPost?.post_id]); // 只在切换帖子时同步，不响应 likes 变化（避免覆盖本地操作）
 
 
   const [localCollected, setLocalCollected] = useState(() => {
@@ -128,6 +150,37 @@ const PostDetails = ({ post }: PostProps) => {
       setLocalCollected(localCollected);
     }
   };
+
+  const onThumb = async () => {
+    console.log("currentpost.likes", currentPost?.likes);
+    
+    if (isRequesting) return;
+    
+    const newLocalLiked = !localLiked;
+    setIsRequesting(true);
+    const newLocalLikes = newLocalLiked ? localLikes + 1 : localLikes - 1;
+    setLocalLiked(newLocalLiked);
+    setLocalLikes(prev => Math.max(0,newLocalLikes));
+    ThumbedMap[post_id] = newLocalLiked;
+    try {
+      await apiToggleThumb({
+        entity_type: "post",
+        entity_id: post_id,
+        isThumbed: newLocalLiked,
+      });
+
+      const refreshThumbedMap = useUserStore.getState().refreshThumbedMap;
+      await refreshThumbedMap();
+
+    } catch (error) {
+      console.error('Toggle thumb failed:', error);
+      setLocalLiked(localLiked);
+      setLocalLikes(prev => Math.max(0,newLocalLikes));
+
+    } finally {
+      setIsRequesting(false);
+    }
+  }
 
 
   const handleRefresh = async () => {
@@ -249,7 +302,7 @@ const PostDetails = ({ post }: PostProps) => {
                       >
                         <Image
                           source={{ uri: img.img_url }}
-                          style={{ width: '100%', height: swiperHeight }}
+                          style={{ width: '100%', height: swiperHeight || 200 }}
                           resizeMode="contain"
                         />
                       </TouchableOpacity>
@@ -257,7 +310,7 @@ const PostDetails = ({ post }: PostProps) => {
                   </PagerView>
                 </View>
               ) :
-                <View className="h-[50vh] px-2 py-2 bg-white ">
+                <View className="h-[300px] px-2 py-2 bg-gray-100 ">
                   <Text className="text-center text-gray-400">没有图片</Text>
                 </View>}
             </View>
@@ -278,10 +331,10 @@ const PostDetails = ({ post }: PostProps) => {
 
 
             </View>
-            <TouchableOpacity className="flex-row items-center ml-4">
-              <Image source={ThumbedMap[post_id] ? icons.loveH : icons.love} className="size-6" />
+            <TouchableOpacity className="flex-row items-center ml-4" onPress={onThumb}>
+              <Image source={localLiked ? icons.loveH : icons.love} className="size-6" />
               <Text className="font-semibold text-base ml-2">
-                {currentPost.likes}
+                {localLikes}
               </Text>
             </TouchableOpacity>
 
@@ -319,7 +372,7 @@ const PostDetails = ({ post }: PostProps) => {
                 <Text className="text-white font-semibold">发送</Text>
               )}
             </TouchableOpacity>
-            <TouchableOpacity onPress={onCollect} activeOpacity={1} >
+            <TouchableOpacity onPress={onCollect} activeOpacity={1} disabled={isRequesting} >
               <Image source={localCollected ? icons.starH : icons.star} className="size-6" />
             </TouchableOpacity>
           </View>

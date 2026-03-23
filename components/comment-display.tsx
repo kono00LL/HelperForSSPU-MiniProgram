@@ -242,7 +242,7 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
                 <Text className="text-lg font-bold text-white py-1 px-4">
                     评论{total}
                 </Text>
-                {/* TODO 最好做成吸顶 */}
+                {/* TODO 评论栏最好做成吸顶 */}
             </View>
             {/* 评论列表 */}
             {/* TODO 组件样式还能再优化一些 */}

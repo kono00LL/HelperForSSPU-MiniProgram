@@ -1,8 +1,8 @@
 import { icons } from "@/constants/icons";
 import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { Post } from "@/interfaces/postInfo";
-
 import { apiGetUserProfile, apiToggleThumb } from "@/services/api";
+import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
 import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -30,6 +30,12 @@ const PostCard = ({ post }: PostCardProps) => {
 
   const { width: screenWidth } = useWindowDimensions();
   const [swiperHeight, setSwiperHeight] = useState(200);
+
+  const currentpost = usePostStore((state) => state.currentPost);
+  const [localLikes, setLocalLikes] = useState(() => {
+    return post?.likes || 0;
+  });
+  const [isRequesting, setIsRequesting] = useState(false);
 
 
   useEffect(() => {
@@ -79,23 +85,39 @@ const PostCard = ({ post }: PostCardProps) => {
   }, [post?.images, screenWidth]);
 
   const onThumb = async () => {
+    /**
+     * 外部点赞流程
+     * 检测以localliked为准
+     * 先更新本地点赞状态，为旧状态的反值
+     * 更新点赞表内数据
+     * 调用借口更新服务器数据
+     * 随后完全刷新点赞表
+     * 如果失败，则回滚本地点赞状态
+     */
+    if (isRequesting) return;
+    console.log(post?.likes);
+    
     const newLocalLiked = !localLiked;
+    const newLocalLikes = newLocalLiked ? localLikes + 1 : localLikes - 1;
+    setIsRequesting(true);
     setLocalLiked(newLocalLiked);
 
-    ThumbedMap[post_id] = true;
+    ThumbedMap[post_id] = newLocalLiked;
     try {
       await apiToggleThumb({
         entity_type: "post",
         entity_id: post_id,
         isThumbed: newLocalLiked,
       });
-
+      setLocalLikes(prev => Math.max(0,newLocalLikes));
       const refreshThumbedMap = useUserStore.getState().refreshThumbedMap;
       await refreshThumbedMap();
 
     } catch (error) {
       console.error('Toggle thumb failed:', error);
       setLocalLiked(localLiked);
+    } finally {
+      setIsRequesting(false);
     }
   }
 
