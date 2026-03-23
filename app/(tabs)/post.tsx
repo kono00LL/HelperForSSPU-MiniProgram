@@ -101,6 +101,11 @@ const Post = () => {
             <Text className="text-2xl text-gray-600">✕</Text>
           </TouchableOpacity>
 
+          {/**
+  * 对于发布按钮
+  * 如果isPublishing  则加载
+  * 如果draftImages.length<1 ,则为继续，否则为发布,跳转至cover-edit页面
+  */}
           {/* 右侧发布按钮 */}
           <TouchableOpacity
             className={`px-5 py-2 rounded-full ${draftTitle.trim().length > 2 && draftContent.trim().length > 5 && !isPublishing
@@ -108,12 +113,14 @@ const Post = () => {
               : "bg-gray-300"
               }`}
             disabled={!draftTitle.trim() || !draftContent.trim() || isPublishing}
-            onPress={handlePublish}
+            onPress={draftImages.length < 1 ? () => router.push('/cover-edit') : handlePublish}
           >
             {isPublishing ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text className="text-white font-semibold text-base">发布</Text>
+              <Text className="text-white font-semibold text-base">
+                {draftImages.length < 1 ? "下一步" : "发布"}
+              </Text>
             )}
           </TouchableOpacity>
         </View>

@@ -12,6 +12,7 @@ import comment from "@/assets/icons/comment.png";
 import edit from "@/assets/icons/edit.png";
 import emoji from "@/assets/icons/emoji.png";
 import global from "@/assets/icons/global.png";
+import go from "@/assets/icons/go.png";
 import helpersspu from "@/assets/icons/helpersspu.png";
 import home from "@/assets/icons/home.png";
 import keyboardBoxLine from "@/assets/icons/keyboard-box-line.png";
@@ -34,6 +35,7 @@ export const icons = {
   A3,
   A4,
   A5,
+  go,
   album,
   camera,
   collect,
@@ -57,4 +59,5 @@ export const icons = {
   post,
   publish,
   xiaoyuantong,
+
 };

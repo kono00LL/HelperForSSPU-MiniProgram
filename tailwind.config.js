@@ -36,6 +36,7 @@ module.exports = {
         nice: {
           10: "#eef5fc",
           20: "#b1bec9",
+          50: "#afbfce",
           100: "#6c92b6",
           150: "#8aafd3",
           200: "#5e84ae",

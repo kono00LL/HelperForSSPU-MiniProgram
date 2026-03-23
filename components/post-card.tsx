@@ -108,7 +108,7 @@ const PostCard = ({ post }: PostCardProps) => {
           onPress={() => router.push({
             pathname: "/users/[user_id]",
             params: {
-              user_id: profileData?.user.user_id
+              user_id: profileData?.user.user_id as string
             }
           })}
           className="flex-1 flex-row items-center"
@@ -142,7 +142,7 @@ const PostCard = ({ post }: PostCardProps) => {
           {post.images?.[0] && (
             <Image
               source={{ uri: post.images[0].img_url }}
-              style={{ width: '100%', height: swiperHeight * 0.8 }}
+              style={{ width: '100%', height: swiperHeight * 0.9 }}
               resizeMode="cover"
             />
           )}
