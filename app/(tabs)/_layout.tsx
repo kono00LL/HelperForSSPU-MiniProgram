@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { SplashScreen, Tabs } from "expo-router";
 import {
   Image,
   ImageBackground,
@@ -7,8 +7,22 @@ import {
 } from "react-native";
 //@ts-ignore
 import { icons } from "@/constants/icons";
+import { useFonts } from 'expo-font';
+import { useEffect } from "react";
+SplashScreen.preventAutoHideAsync();
 
 function TabIcon({ focused, icon, title, size = 24 }: any) {
+  const [loaded] = useFonts({
+    'OPPOSans-Light': require('@/assets/OPPOSans Light.ttf'),
+    'OPPOSans-Regular': require('@/assets/OPPOSans Regular.ttf'),
+    'OPPOSans-Bold': require('@/assets/OPPOSans Bold.ttf'),
+  });
+  useEffect(() => {
+    if (loaded) SplashScreen.hideAsync();
+  }, [loaded]);
+
+  if (!loaded) return null;
+  
   if (focused) {
     return (
       <View >

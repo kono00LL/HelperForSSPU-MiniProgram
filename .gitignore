@@ -47,6 +47,7 @@ app-example
 /docs/backed/
 /docs/其他.md
 /docs/BUG
+/docs
 /.gradle
 /.idea
 .gitignore

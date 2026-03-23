@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, View, useWindowDimensions } from "react-native";
+import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 interface PostProps {
@@ -214,9 +214,9 @@ const PostDetails = ({ post }: PostProps) => {
             >
               <Image
                 source={{ uri: currentPost?.user?.avatar_url }}
-                className="w-10 h-10 rounded-full ml-10 mt-6"
+                className="w-10 h-10 rounded-full ml-10 mt-2"
               />
-              <Text className="ml-3 text-medium font-semibold mt-5">
+              <Text className="ml-3 text-mediummt-5" style={{ fontFamily: 'OPPOSans-Bold' }}>
                 {currentPost.user.user_name}
               </Text>
             </TouchableOpacity>
@@ -263,14 +263,16 @@ const PostDetails = ({ post }: PostProps) => {
             </View>
 
             {/* 帖子内容区域 */}
-            <View className="flex-1 py-8">
+            <View className="flex-1 py-8 px-2">
               {/* 标题 */}
-              <Text className="text-3xl font-bold mb-3">
+              <Text className="text-3xl mb-3"
+              style={{ fontFamily: 'OPPOSans-Bold' }}>
                 {currentPost.title}
               </Text>
 
               {/* 正文 */}
-              <Text className="text-base leading-6 text-gray-700 mb-4">
+              <Text className="text-lg leading-6 text-gray-700 mb-2 px-6"
+              style={{ fontFamily: 'OPPOSans-Regular' }}>
                 {currentPost.content}
               </Text>
 

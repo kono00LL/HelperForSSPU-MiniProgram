@@ -12,7 +12,9 @@ const explore = () => {
         <View className="text-2xl font-bold border-b border-gray-200">
           <View className="items-center justify-between">
             <View className="flex-row items-center py-2 ">
-              <Text className="text-lg font-semibold text-gray-900">
+              <Text className="text-lg text-gray-900"
+                style={{ fontFamily: 'OPPOSans-Regular' }}
+              >
                 消息
               </Text>
             </View>
