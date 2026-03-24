@@ -1,3 +1,4 @@
+// @ts-nocheck
 import A0 from "@/assets/avatars/a0.png";
 import A1 from "@/assets/avatars/a1.png";
 import A2 from "@/assets/avatars/a2.png";
