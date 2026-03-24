@@ -1,7 +1,6 @@
+import { images } from "@/constants/images";
 import React from "react";
 import { ImageBackground, Text, View } from "react-native";
-
-import { images } from "@/constants/images";
 const exchange = () => {
   return (
     <View>

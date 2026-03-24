@@ -87,7 +87,6 @@ const Profile = () => {
               <Text className="text-3xs text-gray-800 mt-1">粉丝</Text>
             </View>
 
-            {/* 推到最右边 */}
             <View className="flex-1 flex-row justify-end items-center">
               <TouchableOpacity className="mr-2">
                 <Image source={icons.xiaoyuantong} className="w-40 h-16" resizeMode="contain" />

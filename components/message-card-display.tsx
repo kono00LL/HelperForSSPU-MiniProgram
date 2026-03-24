@@ -6,19 +6,16 @@ import MessageCard from './message-card'
 
 const CardDisplay = () => {
 
-    const [posts, setPosts] = useState()
-    const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 10;
     const [pageStack, setPageStack] = useState<number[]>([0])
     const [refreshing, setRefreshing] = useState(false)
-    const isLoading = useMessageStore((state) => state.isLoading)
     const messageList = useMessageStore((state) => state.messageList)
     const addMessages = useMessageStore((state) => state.addMessages)
 
     useEffect(() => {
         loadMorePage()
-    }, [])
+    })
 
     const loadSinglePage = async (page: number) => {
         if (!hasMore) return;
@@ -74,7 +71,6 @@ const CardDisplay = () => {
                 onRefresh={() => { }}
                 ListEmptyComponent={<Text className="text-center text-gray-400 mt-8">暂无消息</Text>}
             />
-            <Text>display</Text>
         </View>
     )
 }

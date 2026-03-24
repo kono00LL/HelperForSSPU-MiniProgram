@@ -36,7 +36,7 @@ const Post = () => {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      selectionLimit: 9 - draftImages.length, // 剩余可选数量
+      selectionLimit: 9 - draftImages.length, 
       quality: 0.8,
     });
     if (result.canceled || !result.assets) return;
@@ -59,7 +59,7 @@ const Post = () => {
           text: "确定",
           onPress: () => {
             clearDraft();
-            router.push("/(tabs)"); // 返回首页
+            router.push("/(tabs)"); 
           },
         },
       ]);
@@ -102,11 +102,10 @@ const Post = () => {
           </TouchableOpacity>
 
           {/**
-  * 对于发布按钮
-  * 如果isPublishing  则加载
-  * 如果draftImages.length<1 ,则为继续，否则为发布,跳转至cover-edit页面
-  */}
-          {/* 右侧发布按钮 */}
+           * 对于发布按钮
+           * 如果isPublishing  则加载
+           * 如果draftImages.length<1 ,则为继续，否则为发布,跳转至cover-edit页面
+           */}
           <TouchableOpacity
             className={`px-5 py-2 rounded-full ${draftTitle.trim().length > 2 && draftContent.trim().length > 5 && !isPublishing
               ? "bg-blue-700"
@@ -153,8 +152,6 @@ const Post = () => {
             />
           </View>
 
-
-          {/* 图片上传 */}
 
           {/* 图片上传 */}
           <View className="flex-row flex-wrap gap-2 mt-2 px-4">

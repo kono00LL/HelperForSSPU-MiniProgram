@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface TopTabBarProps {
-  activeTab: number; // 0: 校园新闻, 1: 学生讨论
+  activeTab: number;
   onTabChange: (index: number) => void;
 }
 
@@ -12,7 +12,6 @@ const TopTabBar = ({
 }: TopTabBarProps) => {
   return (
     <>
-      {/* <View className="h-[34px]"></View> */}
       <View className="h-[44px] w-full bg-nice-100 flex-row rounded-b-3xl text-white">
         {/* 校园新闻 Tab */}
         <TouchableOpacity

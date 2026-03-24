@@ -245,8 +245,6 @@ const PostDetails = ({ post }: PostProps) => {
         <KeyboardAvoidingView
           className="flex-1 "
           behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-        // contentContainerStyle={{ flex: 1, backgroundColor: 'red' }}
-        // keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
         >
           { /* 顶部区域 */}
           <View className="flex-row px-4 py-3 bg-nice-100">
@@ -298,7 +296,6 @@ const PostDetails = ({ post }: PostProps) => {
                         key={img.img_id}
                         activeOpacity={0.9}
                         onPress={() => handleImagePress(index)}
-                      // style={{ flex: 1 }}
                       >
                         <Image
                           source={{ uri: img.img_url }}

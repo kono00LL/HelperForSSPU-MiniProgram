@@ -1,14 +1,13 @@
+import { icons } from "@/constants/icons";
+import { useFonts } from 'expo-font';
 import { SplashScreen, Tabs } from "expo-router";
+import { useEffect } from "react";
 import {
   Image,
   ImageBackground,
   Text,
   View,
 } from "react-native";
-//@ts-ignore
-import { icons } from "@/constants/icons";
-import { useFonts } from 'expo-font';
-import { useEffect } from "react";
 SplashScreen.preventAutoHideAsync();
 
 function TabIcon({ focused, icon, title, size = 24 }: any) {

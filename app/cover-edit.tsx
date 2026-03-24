@@ -10,8 +10,7 @@ import {
     Text,
     TextInput,
     TouchableOpacity,
-    View,
-    useWindowDimensions
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ViewShot, { captureRef } from 'react-native-view-shot';
@@ -23,13 +22,11 @@ const TEMPLATES = [
 
 const CoverEdit = () => {
     const router = useRouter();
-    const { width } = useWindowDimensions();
 
     const { draftTitle, setDraftTitle, addDraftImage, publishPost, clearDraft } = usePostStore();
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [isPublishing, setIsPublishing] = useState(false);
-   // ref 改为
-const captureViewRef = useRef<ViewShot>(null);
+    const captureViewRef = useRef<ViewShot>(null);
 
 
     const displayTitle = draftTitle.length > 10
@@ -48,8 +45,8 @@ const captureViewRef = useRef<ViewShot>(null);
                 format: 'png',
                 quality: 0.9,
             });
-            addDraftImage(uri);   // 加入草稿
-            await publishPost();  // 发布
+            addDraftImage(uri);   
+            await publishPost();  
 
             Alert.alert('发布成功', '您的帖子已成功发布！', [
                 {
@@ -78,8 +75,6 @@ const captureViewRef = useRef<ViewShot>(null);
 <KeyboardAvoidingView
           className="flex-1 "
           behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
-        // contentContainerStyle={{ flex: 1, backgroundColor: 'red' }}
-        // keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : 0}
         >
             {/* 截图目标区域 */}
             <ViewShot 
@@ -131,11 +126,8 @@ const captureViewRef = useRef<ViewShot>(null);
                {/* 标题输入框 */}
             <View className="h-[120px] bg-white px-4 py-4">
                 <View className=" bg-[#afbfce] rounded-xl ">
-                    {/* <Text>标题</Text>
-                    <Text>{displayTitle}</Text> */}
                     <TextInput
-                        className="text-2xl font-bold py-4"
-                        
+                        className="text-2xl font-bold py-4"   
                         placeholder={displayTitle}
                         placeholderTextColor="#23272e"
                         style={{ color: '#fff', fontFamily: 'OPPOSans-Regular' }}

@@ -2,7 +2,7 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
 interface TopTabBarProps {
-	activeTab: number; // 0: 已发布帖子, 1: 收藏帖子
+	activeTab: number; 
 	onTabChange: (index: number) => void;
 }
 

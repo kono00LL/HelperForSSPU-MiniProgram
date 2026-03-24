@@ -6,13 +6,10 @@ import PostCard from './post-card'
 
 const CardDisplay = () => {
 
-    const [posts, setPosts] = useState()
-    const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 10;
     const [pageStack, setPageStack] = useState<number[]>([0])
     const [refreshing, setRefreshing] = useState(false)
-    const isLoading = usePostStore((state) => state.isLoading)
     const postList = usePostStore((state) => state.postList)
     const addPosts = usePostStore((state) => state.addPosts)
     const clearPosts = usePostStore((state) => state.clearPosts)
@@ -23,7 +20,7 @@ const CardDisplay = () => {
 
     useEffect(() => {
         loadMorePage()
-    }, [])
+    })
 
     const loadSinglePage = async (page: number) => {
         if (!hasMore) return;

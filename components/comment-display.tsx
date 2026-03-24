@@ -112,19 +112,6 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
                             {comment.content}
                         </Text>
 
-                        {/* 评论图片 */}
-                        {/* {comment.images && comment.images.length > 0 && (
-                            <View className="flex-row flex-wrap mt-2">
-                                {comment.images.map((img) => (
-                                    <Image
-                                        key={img.img_id}
-                                        source={{ uri: img.img_url }}
-                                        className="w-24 h-24 rounded mr-2 mb-2"
-                                        resizeMode="cover"
-                                    />
-                                ))}
-                            </View>
-                        )} */}
 
                         {/* 底部操作：回复数、点赞 */}
                         <View className="flex-row items-center  gap-4">

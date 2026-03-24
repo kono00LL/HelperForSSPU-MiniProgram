@@ -2,7 +2,6 @@ import { icons } from "@/constants/icons";
 import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { Post } from "@/interfaces/postInfo";
 import { apiGetUserProfile, apiToggleThumb } from "@/services/api";
-import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
 import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -14,7 +13,6 @@ import {
   useWindowDimensions
 } from "react-native";
 
-
 interface PostCardProps {
   post: Post;
 }
@@ -25,13 +23,11 @@ const PostCard = ({ post }: PostCardProps) => {
   const [localLiked, setLocalLiked] = useState(() => {
     return !!ThumbedMap[post_id];
   });
-  const { user } = useUserStore();
   const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
   const { width: screenWidth } = useWindowDimensions();
   const [swiperHeight, setSwiperHeight] = useState(200);
 
-  const currentpost = usePostStore((state) => state.currentPost);
   const [localLikes, setLocalLikes] = useState(() => {
     return post?.likes || 0;
   });
@@ -70,12 +66,6 @@ const PostCard = ({ post }: PostCardProps) => {
     );
 
     Promise.all(promises).then((heights) => {
-      /**
-       * 图片先进行判断，如果大小小于一定值，则为某个最小固定值
-       * 如果大于最小值，则按照比例进行缩放，同时保证不低于最小值
-       * 设置最大值，最后两者也就是缩放后的比例与轨道最大值取其最小值
-       * 规定最小值为150，规定最大值为250
-       */
       const MIN = 150;
       const MAX = 250;
       const maxHeight = Math.max(...heights);
@@ -153,9 +143,6 @@ const PostCard = ({ post }: PostCardProps) => {
           <Image source={localLiked ? icons.loveH : icons.love} className="size-6" />
         </TouchableOpacity>
 
-        {/* <View className="ml-1">
-          <Image source={icons.star} className="size-6" />
-        </View> */}
       </View>
 
       {/*封面图*/}

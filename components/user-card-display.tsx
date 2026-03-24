@@ -12,8 +12,6 @@ interface UserCardDisplayProps {
 
 const UserCardDisplay = ({ user_id, refreshing = false, onRefresh }: UserCardDisplayProps) => {
 
-    const [posts, setPosts] = useState()
-    const [currentPage, setCurrentPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 5;
     const [pageStack, setPageStack] = useState<number[]>([0])
