@@ -20,7 +20,7 @@ const CardDisplay = () => {
 
     useEffect(() => {
         loadMorePage()
-    })
+    }, [])
 
     const loadSinglePage = async (page: number) => {
         if (!hasMore) return;
