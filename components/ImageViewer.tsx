@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Image as ExpoImage } from 'expo-image';
+import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
-import { Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 interface Props {
   images: { uri: string }[];
@@ -17,12 +18,23 @@ const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('screen');
 // const [currentIndex, setCurrentIndex] = useState(imageIndex);
 
 const saveImage = async (uri: string) => {
-  const { status } = await MediaLibrary.requestPermissionsAsync();
-  if (status !== 'granted') {
-    console.warn('需要相册权限才能保存图片');
-    return;
+  try {
+    const { status } = await MediaLibrary.requestPermissionsAsync(true);
+    if (status !== 'granted') {
+      console.warn('需要相册权限才能保存图片');
+      Alert.alert('提示', '需要相册权限才能保存图片');
+      return;
+    }
+    // saveToLibraryAsync 只接受本地 URI，先下载到缓存目录
+    const fileName = `img_${Date.now()}.jpg`;
+    const localUri = `${FileSystem.cacheDirectory}${fileName}`;
+    const { uri: savedUri } = await FileSystem.downloadAsync(uri, localUri);
+    await MediaLibrary.saveToLibraryAsync(savedUri);
+    Alert.alert('图片已保存到相册');
+    console.log('图片已保存到相册');
+  } catch (e: any) {
+    console.error('保存图片失败:', e?.message, e?.code);
   }
-  await MediaLibrary.saveToLibraryAsync(uri);
 }
 
 const ImageViewer = ({ images, imageIndex, visible, onRequestClose, onImageIndexChange, currentIndex }: Props) => {
@@ -57,7 +69,7 @@ const ImageViewer = ({ images, imageIndex, visible, onRequestClose, onImageIndex
         </TouchableOpacity>
 
         <View className="w-full flex-row justify-end">
-        <TouchableOpacity onPress={() => saveImage(images[currentIndex].uri)}
+        <TouchableOpacity onPress={() => saveImage(images[currentIndex]?.uri ?? '')}
           className="right  mr-8 mb-8">
     <Ionicons name="download-outline" size={24} color="#fff" />
   </TouchableOpacity>
