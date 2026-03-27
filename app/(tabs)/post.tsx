@@ -37,7 +37,7 @@ const Post = () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       selectionLimit: 9 - draftImages.length, 
-      quality: 0.8,
+      quality: 1,
     });
     if (result.canceled || !result.assets) return;
 

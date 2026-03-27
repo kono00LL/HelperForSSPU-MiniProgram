@@ -215,13 +215,6 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
 
 
     }
-    const renderEmpty = () => {
-        return (
-            <View>
-                <Text className="text-gray-400">暂无评论</Text>
-            </View>
-        )
-    }
 
     return (
         <View className="flex-1 px-4 py-4 ">
@@ -238,7 +231,6 @@ const CommentDisplay = ({ post_id }: CommentDisplayProps) => {
                 renderItem={({ item }) => <CommentItem comment={item} />}
                 keyExtractor={(item) => item.comment_id}
                 ListFooterComponent={renderFooter}
-                ListEmptyComponent={renderEmpty}
                 nestedScrollEnabled
                 style={{ width: '100%' }}
                 contentContainerStyle={{ flexGrow: 1 }}

@@ -7,16 +7,17 @@ import useCommentStore from "@/store/commentStore";
 import { usePostStore } from "@/store/postStore";
 import { useUserStore } from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
+import { Image as ExpoImage } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, Alert, Image, KeyboardAvoidingView, Platform, RefreshControl, ScrollView, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
 import PagerView from "react-native-pager-view";
 import { SafeAreaView } from "react-native-safe-area-context";
 interface PostProps {
   post: Post
 }
-//TODO 有些臃肿了
+
 const PostDetails = ({ post }: PostProps) => {
   const { post_id } = useLocalSearchParams<{ post_id: string }>();
   const currentPost = usePostStore((state) => state.currentPost);
@@ -27,6 +28,9 @@ const PostDetails = ({ post }: PostProps) => {
   const clearCurrentPost = usePostStore((state) => state.clearCurrentPost);
   const [visible, setVisible] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [openAtIndex, setOpenAtIndex] = useState(0);
+  const pagerRef = useRef<PagerView>(null);
+  const lastViewerIndexRef = useRef(0);
 
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,14 +97,31 @@ const PostDetails = ({ post }: PostProps) => {
     return !!CollectedMap[post_id];
   });
 
-  const previewImage = currentPost?.images.map(item => ({
-    uri: item.img_url,
-  })) as { uri: string; }[];
+  const previewImage = useMemo(
+    () => currentPost?.images.map(item => ({ uri: item.img_url })) as { uri: string }[],
+    [currentPost?.images]
+  );
+
+
+  const onViewerIndexChange = useCallback((index: number) => {
+    // #region agent log
+    console.log('[DBG-17daf6][post-fix] onViewerIndexChange newIndex=', index, 'openAtIndex=', openAtIndex);
+    // #endregion
+    lastViewerIndexRef.current = index;
+    setCurrentImageIndex(index);
+  }, [openAtIndex]);
 
   const handleImagePress = (index: number) => {
+    // #region agent log
+    console.log('[DBG-17daf6][post-fix] handleImagePress pressedIndex=', index, 'openAtIndex=', openAtIndex);
+    // #endregion
+    setOpenAtIndex(index);
     setVisible(true);
-    setCurrentImageIndex(index);
   }
+
+  // #region agent log
+  console.log('[DBG-17daf6][post-fix] render', { currentImageIndex, openAtIndex, visible, images: previewImage?.length ?? 0, pagerHasRef: !!pagerRef.current });
+  // #endregion
 
 
   const handleSendComment = async () => {
@@ -287,8 +308,11 @@ const PostDetails = ({ post }: PostProps) => {
               {currentPost.images && currentPost.images.length > 0 ? (
                 <View className="px-2 py-2" style={{ height: swiperHeight }}>
                   <PagerView
-                    style={{ height: swiperHeight }}
+                    ref={pagerRef}
+                    style={{ height: swiperHeight ,backgroundColor: '#eaecf0' }}
                     initialPage={0}
+                    pageMargin={10}
+                    orientation="horizontal"
                     onPageSelected={(event) => setCurrentImageIndex(event.nativeEvent.position)}
                   >
                     {currentPost.images.map((img, index) => (
@@ -297,10 +321,10 @@ const PostDetails = ({ post }: PostProps) => {
                         activeOpacity={0.9}
                         onPress={() => handleImagePress(index)}
                       >
-                        <Image
+                        <ExpoImage
                           source={{ uri: img.img_url }}
                           style={{ width: '100%', height: swiperHeight || 200 }}
-                          resizeMode="contain"
+                          contentFit="contain"
                         />
                       </TouchableOpacity>
                     ))}
@@ -379,10 +403,15 @@ const PostDetails = ({ post }: PostProps) => {
 
       </SafeAreaView>
       <ImageView
+        currentIndex={openAtIndex}
         images={previewImage}
-        imageIndex={0}
-        visible={visible}
-        onRequestClose={() => setVisible(false)}
+        imageIndex={openAtIndex}
+        visible={visible && (previewImage?.length ?? 0) > 0}
+        onRequestClose={() => {
+          setVisible(false);
+          pagerRef.current?.setPage(lastViewerIndexRef.current);
+        }}
+        onImageIndexChange={onViewerIndexChange}
       />
 
     </>

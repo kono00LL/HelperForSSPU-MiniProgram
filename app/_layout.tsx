@@ -29,11 +29,14 @@ export default function RootLayout() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="posts/[post_id]"
-        options={{ headerShown: false }}
+        name="posts"
+        options={{ headerShown: false, 
+          gestureEnabled: true,
+          gestureDirection: "horizontal",
+        }}
       />
       <Stack.Screen
-        name="users/[user_id]"
+        name="users"
         options={{ headerShown: false }}
       />
 
