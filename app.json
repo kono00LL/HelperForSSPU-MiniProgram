@@ -8,13 +8,20 @@
     "scheme": "helperforsspuminiprogram",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.helperforsspu"
     },
     "android": {
       "package": "com.helperforsspu",
       "versionCode": 1,
       "permissions": [
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.READ_MEDIA_AUDIO",
+        "android.permission.READ_MEDIA_IMAGES"
       ],
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -47,7 +54,10 @@
         {
           "photosPermission": "允许访问相册以保存图片",
           "savePhotosPermission": "允许保存图片到相册",
-          "isAccessMediaLocationEnabled": false
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": [
+            "photo"
+          ]
         }
       ],
       [

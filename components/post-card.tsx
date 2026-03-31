@@ -3,6 +3,7 @@ import { UserProfileResponse } from "@/interfaces/apiTypes";
 import { Post } from "@/interfaces/postInfo";
 import { apiGetUserProfile, apiToggleThumb } from "@/services/api";
 import { useUserStore } from "@/store/userStore";
+import { Image as ExpoImage } from "expo-image";
 import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
@@ -32,6 +33,8 @@ const PostCard = ({ post }: PostCardProps) => {
     return post?.likes || 0;
   });
   const [isRequesting, setIsRequesting] = useState(false);
+
+  const coverUrl = post.images?.[0]?.img_url;
 
 
   useEffect(() => {
@@ -74,16 +77,14 @@ const PostCard = ({ post }: PostCardProps) => {
     });
   }, [post?.images, screenWidth]);
 
+  const isAnimatedImage = (url:string) => {
+    if (!url) return false;
+    return /\.(gif|webp)(\?|#|$)/i.test(url);
+  };
+
+  const isAnimated = isAnimatedImage(coverUrl);
+
   const onThumb = async () => {
-    /**
-     * 外部点赞流程
-     * 检测以localliked为准
-     * 先更新本地点赞状态，为旧状态的反值
-     * 更新点赞表内数据
-     * 调用借口更新服务器数据
-     * 随后完全刷新点赞表
-     * 如果失败，则回滚本地点赞状态
-     */
     if (isRequesting) return;
     console.log(post?.likes);
     
@@ -120,20 +121,20 @@ const PostCard = ({ post }: PostCardProps) => {
           onPress={() => router.push({
             pathname: "/users/[user_id]",
             params: {
-              user_id: profileData?.user.user_id as string
+              user_id: post?.user.user_id as string
             }
           })}
           className="flex-1 flex-row items-center"
         >
           <Image
-            source={profileData?.user?.avatar_url
-              ? { uri: profileData.user.avatar_url }
+            source={post?.user?.avatar_url
+              ? { uri: post.user.avatar_url }
               : icons.A0}
             className="w-10 h-10 rounded-full"
           />
           <View className="ml-3 flex-1">
             <Text className="font-semibold text-base">
-              {profileData?.user?.user_name || '未知用户'}
+              {post?.user?.user_name || '未知用户'}
             </Text>
           </View>
         </TouchableOpacity>
@@ -144,15 +145,17 @@ const PostCard = ({ post }: PostCardProps) => {
         </TouchableOpacity>
 
       </View>
-
+{/* TODO 如果是GIF或者其他动图，展示为静态图 */}
       {/*封面图*/}
       <TouchableOpacity>
         <Link href={`/posts/${post.post_id}`}>
           {post.images?.[0] && (
-            <Image
-              source={{ uri: post.images[0].img_url }}
+            <ExpoImage
+              source={coverUrl}
               style={{ width: '100%', height: swiperHeight * 0.9 }}
-              resizeMode="cover"
+              contentFit="cover"
+              cachePolicy="memory-disk"
+              autoplay={!isAnimated}
             />
           )}
 

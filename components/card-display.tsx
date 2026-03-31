@@ -85,14 +85,14 @@ const CardDisplay = () => {
         <View className="flex-1">
             <ScrollView
                 className="flex-1"
-                contentContainerStyle={{ paddingBottom: 80 }}
+                contentContainerStyle={{ paddingBottom: 80}}
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
                 }
                 onScroll={({ nativeEvent }) => {
                     const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
                     const isNearBottom =
-                        layoutMeasurement.height + contentOffset.y >= contentSize.height - 200; // 距底 200px 触发
+                        layoutMeasurement.height + contentOffset.y >= contentSize.height - 120; // 距底 200px 触发
                     if (isNearBottom && hasMore) {
                         loadMorePage();
                     }

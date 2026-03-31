@@ -261,6 +261,7 @@ const PostDetails = ({ post }: PostProps) => {
 
   return (
     <>
+    {/* TODO 预览图很糊 */}
       <StatusBar backgroundColor="#6c92b6" style="dark" />
       <SafeAreaView className="flex-1" edges={['left', 'right']}>
         <KeyboardAvoidingView

@@ -55,12 +55,6 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
         );
 
         Promise.all(promises).then((heights) => {
-            /**
-             * 图片先进行判断，如果大小小于一定值，则为某个最小固定值
-             * 如果大于最小值，则按照比例进行缩放，同时保证不低于最小值
-             * 设置最大值，最后两者也就是缩放后的比例与轨道最大值取其最小值
-             * 规定最小值为150，规定最大值为250
-             */
             const MIN = 150;
             const MAX = 250;
             const maxHeight = Math.max(...heights);
@@ -93,6 +87,7 @@ const CommentItem = ({ comment }: { comment: Comment }) => {
 
     return (
         <>
+        {/* TODO 缺一个二级评论 */}
             <View className="py-3 border-b border-gray-100">
                 <View className="flex-row">
                     {/* 左侧头像 */}
