@@ -49,7 +49,6 @@ const Index = () => {
             onTabChange={setActiveTab}
           />
           {activeTab === 0 ? (
-
             <CardDisplay />
           ) : (
             <View className="flex-1">

@@ -7,11 +7,11 @@ import { Image as ExpoImage } from "expo-image";
 import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-  useWindowDimensions
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+    useWindowDimensions
 } from "react-native";
 
 interface PostCardProps {
@@ -145,7 +145,6 @@ const PostCard = ({ post }: PostCardProps) => {
         </TouchableOpacity>
 
       </View>
-{/* TODO 如果是GIF或者其他动图，展示为静态图 */}
       {/*封面图*/}
       <TouchableOpacity>
         <Link href={`/posts/${post.post_id}`}>
